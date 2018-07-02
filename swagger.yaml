@@ -5,10 +5,15 @@ info:
   title: "mtb-trails-api"
   contact:
     email: "wilsonia@oregonstate.edu"
-    
+
 tags:
 - name: "trails"
-  
+
+consumes:
+- "application/json"
+produces:
+- "application/json"
+
 paths:
   /trails:
     post:
@@ -16,10 +21,6 @@ paths:
       - "trails"
       summary: "Add a new trail"
       operationId: "addTrails"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
       parameters:
       - in: "body"
         name: "body"
@@ -28,33 +29,31 @@ paths:
         schema:
           $ref: "#/definitions/Trail"
       responses:
-        200:
-          description: "Success"
-        204:
-          description: "No data provided"
+        201:
+          description: "New trail object created"
+          schema:
+            $ref: "#/definitions/Trail"
         400:
-          description: "Bad request"
-        405:
-          description: "Invalid input"
+          description: "Incorrect syntax in request"
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: "Internal server error"
-        
+          schema:
+            $ref: "#/definitions/Error"
+
     get:
       tags:
       - "trails"
-      summary: "Get trails by querey parameters"
+      summary: "Get trails by qurey parameters"
       operationId: "getTrails"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
       parameters:
         - in: "query"
           name: "name"
           description: "Returns trails containing any specified names."
           required: false
           type: "array"
-          items: 
+          items:
             type: "string"
           collectionFormat: "multi"
         - in: "query"
@@ -64,14 +63,34 @@ paths:
           type: "array"
           items:
             type: "string"
-            enum: 
+            enum:
             - "Green"
             - "Blue"
             - "Black"
             - "Double Black"
           collectionFormat: "multi"
         - in: "query"
-          name: "location"
+          name: "mostDifficult"
+          description: "Returns any trails easier than specified difficulty"
+          required: false
+          type: "string"
+          enum:
+          - "Green"
+          - "Blue"
+          - "Black"
+          - "Double Black"
+        - in: "query"
+          name: "leastDifficult"
+          description: "Returns any trails harder than specified difficulty"
+          required: false
+          type: "string"
+          enum:
+          - "Green"
+          - "Blue"
+          - "Black"
+          - "Double Black"
+        - in: "query"
+          name: "zipCode"
           description: "Returns trails in any specified zip codes"
           required: false
           type: "array"
@@ -80,59 +99,59 @@ paths:
           collectionFormat: "multi"
         - in: "query"
           name: "smallDrop"
-          description: "Returns trails do or do not contain small drops as specified"
+          description: "Returns trails do or do not contain small drops"
           required: false
           type: "boolean"
         - in: "query"
           name: "largeDrop"
-          description: "Returns trails do or do not contain large drops as specified"
+          description: "Returns trails do or do not contain large drops"
           required: false
-          type: "boolean" 
+          type: "boolean"
         - in: "query"
           name: "woodRide"
-          description: "Returns trails do or do not contain wood rides as specified"
+          description: "Returns trails do or do not contain wood rides"
           required: false
-          type: "boolean" 
+          type: "boolean"
         - in: "query"
           name: "skinny"
-          description: "Returns trails do or do not contain skinnies as specified"
+          description: "Returns trails do or do not contain skinnies"
           required: false
-          type: "boolean" 
+          type: "boolean"
         - in: "query"
           name: "largeJump"
-          description: "Returns trails do or do not contain large jumps as specified"
+          description: "Returns trails do or do not contain large jumps"
           required: false
           type: "boolean"
         - in: "query"
           name: "smallJump"
-          description: "Returns trails do or do not contain small jumps as specified"
+          description: "Returns trails do or do not contain small jumps"
           required: false
-          type: "boolean" 
+          type: "boolean"
         - in: "query"
           name: "gap"
-          description: "Returns trails do or do not contain gaps as specified"
+          description: "Returns trails do or do not contain gaps"
           required: false
           type: "boolean"
       responses:
         200:
-          description: "Success"
-        204:
-          description: "No data provided"
+          description: "Trail object(s) retrieved"
+          schema:
+            $ref: "#/definitions/Trails"
         400:
-          description: "Bad request"
-        405:
-          description: "Invalid input"
+          description: "Incorrect syntax in request"
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: "Internal server error"
-        
+          schema:
+            $ref: "#/definitions/Error"
+
   /trails/{trailID}:
     get:
       tags:
       - "trails"
       summary: "Return trail object by ID"
       operationId: "getTrailById"
-      produces:
-      - "application/json"
       parameters:
         - name: "trailID"
           in: "path"
@@ -141,23 +160,21 @@ paths:
           type: "integer"
       responses:
         200:
-          description: "Success"
-        204:
-          description: "No data provided"
-        400:
-          description: "Bad request"
+          description: "Trail object retrieved"
+          schema:
+            $ref: "#/definitions/Trail"
         404:
-          description: "Trail not found"
-        405:
-          description: "Invalid input"
+          description: "No trail exists with this ID"
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
     put:
       tags:
       - "trails"
       summary: "Update trail object by ID and body data"
-      produces:
-      - "application/json"
       parameters:
         - name: "trailID"
           in: "path"
@@ -171,9 +188,23 @@ paths:
           schema:
             $ref: "#/definitions/Trail"
       responses:
-       405:
-        description: "Invalid input"
-        
+        200:
+          description: "Trail object updated"
+          schema:
+            $ref: "#/definitions/Trail"
+        400:
+          description: "Incorrect syntax in request"
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: "No trail exists with this ID"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+
     delete:
       tags:
       - "trails"
@@ -185,19 +216,18 @@ paths:
           required: true
           type: "integer"
       responses:
-        200:
-          description: "Success"
         204:
-          description: "No data provided"
-        400:
-          description: "Bad request"
+          description: "Trail object deleted"
         404:
-          description: "Trail not found"
-        405:
-          description: "Invalid input"
+          description: "No trail exists with this ID"
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: "Internal server error"
-  
+          schema:
+            $ref: "#/definitions/Error"
+
+
 definitions:
   Features:
     type: "object"
@@ -223,7 +253,7 @@ definitions:
       gap:
         description: "Mandatory gaps in trail (must be cleared)"
         type: "boolean"
-      
+
   Trail:
     type: "object"
     required:
@@ -236,6 +266,9 @@ definitions:
       name:
         type: "string"
         example: "Dan's Trail"
+      zipCode:
+        description: "Zip code of trail head"
+        type: "integer"
       difficulty:
         type: "string"
         enum:
@@ -243,8 +276,29 @@ definitions:
         - "Blue"
         - "Black"
         - "Double Black"
-      features:
+      attributes:
         $ref: "#/definitions/Features"
-      location:
-        description: "Zip code of trail head"
+
+  Trails:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+              format: "int64"
+            type:
+              type: "string"
+            attributes:
+              $ref: "#/definitions/Trail"
+
+  Error:
+    type: "object"
+    properties:
+      errorMessage:
+        type: "string"
+      errorCode:
         type: "integer"
