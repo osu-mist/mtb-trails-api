@@ -278,8 +278,11 @@ definitions:
           id:
             type: "integer"
             format: "int64"
+          type:
+            type: "string"
+            default: "Trail"
           attributes:
-              $ref: "#/definitions/Features"
+            $ref: "#/definitions/Features"
 
   Trails:
     type: "object"
@@ -291,6 +294,9 @@ definitions:
             id:
               type: "integer"
               format: "int64"
+            type:
+              type: "string"
+              default: "Trail"
             attributes:
               $ref: "#/definitions/Features"
 
