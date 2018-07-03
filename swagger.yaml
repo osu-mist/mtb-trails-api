@@ -45,7 +45,7 @@ paths:
     get:
       tags:
       - "trails"
-      summary: "Get trails by qurey parameters"
+      summary: "Get trails by query parameters"
       operationId: "getTrails"
       parameters:
         - in: "query"
@@ -260,24 +260,45 @@ definitions:
     - "name"
     - "location"
     properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-        example: "Dan's Trail"
-      zipCode:
-        description: "Zip code of trail head"
-        type: "integer"
-      difficulty:
-        type: "string"
-        enum:
-        - "Green"
-        - "Blue"
-        - "Black"
-        - "Double Black"
-      attributes:
-        $ref: "#/definitions/Features"
+      data:
+        properties:
+          id:
+            type: "integer"
+            format: "int64"
+          name:
+            type: "string"
+            example: "Dan's Trail"
+          zipCode:
+            description: "Zip code of trail head"
+            type: "integer"
+          difficulty:
+            type: "string"
+            enum:
+            - "Green"
+            - "Blue"
+            - "Black"
+            - "Double Black"
+          largeDrop:
+            description: "Drops larger than 4 feet"
+            type: "boolean"
+          smallDrop:
+            description: "Drops smaller than 4 feet"
+            type: "boolean"
+          woodRide:
+            description: "Any built wooden feature"
+            type: "boolean"
+          skinny:
+            description: "Any narrow ride at a height"
+            type: "boolean"
+          largeJump:
+            description: "Jumps taller than 4 feet"
+            type: "boolean"
+          smallJump:
+            description: "Jumps shorter than 4 feet"
+            type: "boolean"
+          gap:
+            description: "Mandatory gaps in trail (must be cleared)"
+            type: "boolean"
 
   Trails:
     type: "object"
@@ -290,15 +311,56 @@ definitions:
             id:
               type: "integer"
               format: "int64"
-            type:
+            name:
               type: "string"
-            attributes:
-              $ref: "#/definitions/Trail"
+              example: "Dan's Trail"
+            zipCode:
+              description: "Zip code of trail head"
+              type: "integer"
+            difficulty:
+              type: "string"
+              enum:
+              - "Green"
+              - "Blue"
+              - "Black"
+              - "Double Black"
+            largeDrop:
+              description: "Drops larger than 4 feet"
+              type: "boolean"
+            smallDrop:
+              description: "Drops smaller than 4 feet"
+              type: "boolean"
+            woodRide:
+              description: "Any built wooden feature"
+              type: "boolean"
+            skinny:
+              description: "Any narrow ride at a height"
+              type: "boolean"
+            largeJump:
+              description: "Jumps taller than 4 feet"
+              type: "boolean"
+            smallJump:
+              description: "Jumps shorter than 4 feet"
+              type: "boolean"
+            gap:
+              description: "Mandatory gaps in trail (must be cleared)"
+              type: "boolean"
+
 
   Error:
-    type: "object"
     properties:
-      errorMessage:
-        type: "string"
-      errorCode:
-        type: "integer"
+      status:
+        type: integer
+        description: HTTP status code.
+      developerMessage:
+        type: string
+        description: An error string aimed at developers.
+      userMesage:
+        type: string
+        description: An error string aimed at end users.
+      code:
+        type: integer
+        description: Error code.
+      details:
+        type: string
+        description: A link to further information about the error.
