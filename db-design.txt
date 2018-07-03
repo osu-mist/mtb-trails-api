@@ -1,0 +1,46 @@
+-- MTB Trails Database Design
+
+-- Tables
+
+	-- table/column names in lowercase, data types in CAPITALS
+
+		trail_difficulties
+			difficulty_id		SMALLINT NOT NULL
+			difficulty_color	VARCHAR(255 BYTE)
+			-- primary key constraint for difficulty_id
+			-- this table will not be altered by any API requests
+
+		trails
+			id						INTEGER NOT NULL, PRIMARY KEY
+			name						VARCHAR(255 BYTE)
+			zipcode					SMALLINT
+			difficulty_id				SMALLINT
+			largedrop					SMALLINT
+			smalldrop					SMALLINT
+			woodride					SMALLINT
+			skinny					SMALLINT
+			largejump					SMALLINT
+			smalljump					SMALLINT
+			gap						SMALLINT
+			-- primary key constraint for id
+			-- foreign key constraint for difficulty_id, referencing trail_difficulties table
+			-- columns largedrop through gap would be BOOLEAN type, but Oracle SQl doesn't have this. 0/1 will be used.
+
+-- Sequences
+
+	trail_seq
+		MINVALUE		1
+		START WITH 	1
+		INCREMENT BY	1
+		CACHE		10
+		-- used for incrementation of trail id
+
+-- Sample Queries
+
+	-- Add new trail difficulty
+	INSERT INTO TRAIL_DIFFICULTIES(DIFFICULTY_ID, DIFFICULTY_COLOR)
+	VALUES(1, "Green")
+
+	-- Add new trail
+	INSERT INTO TRAILS(ID, NAME, ZIPCODE, DIFFICULTY_ID, LARGEDROP, SMALLDROP, WOODRIDE, SKINNY, LARGEJUMP, SMALLUMP, GAP)
+	VALUES(trail_seq.nextval, "No Secret", 97330, 0, 1, 0, 0, 0, 1, 0)
