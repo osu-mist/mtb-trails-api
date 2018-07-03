@@ -13,12 +13,12 @@
 		trails
 			id						INTEGER NOT NULL, PRIMARY KEY
 			name						VARCHAR(255 BYTE)
-			zipcode					SMALLINT
-			difficulty_id				SMALLINT
+			zipcode						SMALLINT
+			difficulty_id					SMALLINT
 			largedrop					SMALLINT
 			smalldrop					SMALLINT
 			woodride					SMALLINT
-			skinny					SMALLINT
+			skinny						SMALLINT
 			largejump					SMALLINT
 			smalljump					SMALLINT
 			gap						SMALLINT
@@ -30,9 +30,9 @@
 
 	trail_seq
 		MINVALUE		1
-		START WITH 	1
-		INCREMENT BY	1
-		CACHE		10
+		START WITH 		1
+		INCREMENT BY		1
+		CACHE			10
 		-- used for incrementation of trail id
 
 -- Sample Queries
