@@ -6,13 +6,13 @@
 
 		trail_difficulties
 			difficulty_id		SMALLINT NOT NULL
-			difficulty_color	VARCHAR(255 BYTE)
+			difficulty_color	VARCHAR2(255 BYTE)
 			-- primary key constraint for difficulty_id
 			-- this table will not be altered by any API requests
 
 		trails
 			id						INTEGER NOT NULL, PRIMARY KEY
-			name						VARCHAR(255 BYTE)
+			name						VARCHAR2(255 BYTE)
 			zipcode						SMALLINT
 			difficulty_id					SMALLINT
 			largedrop					SMALLINT
