@@ -310,4 +310,4 @@ definitions:
         description: Error code.
       details:
         type: string
-        description: A link to further information about the error.s
+        description: A link to further information about the error.
