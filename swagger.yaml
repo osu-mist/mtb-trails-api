@@ -231,6 +231,9 @@ paths:
 definitions:
   Features:
     type: "object"
+    required:
+    - "name"
+    - "zipCode"
     properties:
       name:
         type: "string"
@@ -269,9 +272,6 @@ definitions:
 
   Trail:
     type: "object"
-    required:
-    - "name"
-    - "location"
     properties:
       data:
         properties:
@@ -303,17 +303,17 @@ definitions:
   Error:
     properties:
       status:
-        type: integer
-        description: HTTP status code.
+        type: "integer"
+        description: "HTTP status code."
       developerMessage:
-        type: string
-        description: An error string aimed at developers.
-      userMesage:
-        type: string
-        description: An error string aimed at end users.
+        type: "string"
+        description: "An error string aimed at developers."
+      userMessage:
+        type: "string"
+        description: "An error string aimed at end users."
       code:
-        type: integer
-        description: Error code.
+        type: "integer"
+        description: "Error code."
       details:
-        type: string
-        description: A link to further information about the error.
+        type: "string"
+        description: "A link to further information about the error."
