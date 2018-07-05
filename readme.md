@@ -1,6 +1,6 @@
-# Web API Skeleton
+# MTB Trails API
 
-Skeleton for Dropwizard Web APIs.
+Mountain bike trail information learning project for Dropwizard Web API.
 
 ## Generate Keys
 
