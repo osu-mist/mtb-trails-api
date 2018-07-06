@@ -2,12 +2,15 @@ package edu.oregonstate.mist.trailsapi
 
 import edu.oregonstate.mist.api.Application
 import edu.oregonstate.mist.api.Configuration
+import edu.oregonstate.mist.trailsapi.TrailsConfiguration
 import io.dropwizard.setup.Environment
+import io.dropwizard.jdbi.DBIFactory
+import org.skife.jdbi.v2.DBI
 
 /**
  * Main application class.
  */
-class TrailsApplication extends Application<Configuration> {
+class TrailsApplication extends Application<TrailsConfiguration> {
     /**
      * Parses command-line arguments and runs the application.
      *
@@ -15,8 +18,10 @@ class TrailsApplication extends Application<Configuration> {
      * @param environment
      */
     @Override
-    public void run(Configuration configuration, Environment environment) {
+    public void run(TrailsConfiguration configuration, Environment environment) {
         this.setup(configuration, environment)
+	   //final DBIFactory FACTORY = new DBIFactory()
+	   //final DBI JDBI = FACTORY.build(environment, configuration.getDataSourceFactory(), "jdbi")
     }
 
     /**
