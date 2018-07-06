@@ -3,6 +3,7 @@ package edu.oregonstate.mist.trailsapi
 import edu.oregonstate.mist.api.Application
 import edu.oregonstate.mist.api.Configuration
 import edu.oregonstate.mist.trailsapi.TrailsConfiguration
+import edu.oregonstate.mist.trailsapi.db.TrailDAO
 import io.dropwizard.setup.Environment
 import io.dropwizard.jdbi.DBIFactory
 import org.skife.jdbi.v2.DBI
@@ -20,8 +21,10 @@ class TrailsApplication extends Application<TrailsConfiguration> {
     @Override
     public void run(TrailsConfiguration configuration, Environment environment) {
         this.setup(configuration, environment)
-	   //final DBIFactory FACTORY = new DBIFactory()
-	   //final DBI JDBI = FACTORY.build(environment, configuration.getDataSourceFactory(), "jdbi")
+	   final DBIFactory FACTORY = new DBIFactory()
+	   final DBI JDBI = FACTORY.build(environment, configuration.getDataSourceFactory(), "jdbi")
+	   final TrailDAO DAO = JDBI.onDemand(TrailDAO.class)
+	   //environment.jersey().register(new TrailResource(dao))
     }
 
     /**
