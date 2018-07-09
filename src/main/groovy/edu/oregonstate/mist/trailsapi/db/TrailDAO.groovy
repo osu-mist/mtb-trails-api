@@ -12,9 +12,9 @@ import org.skife.jdbi.v2.sqlobject.BindBean
 interface TrailDAO extends Closeable {
 	@SqlUpdate ("""
 		INSERT INTO TRAILS (ID, NAME, ZIPCODE, DIFFICULTY_ID, LARGEDROP, SMALLDROP, WOODRIDE, SKINNY,
-		LARGEJUMP, SMALLJUMP)
+		LARGEJUMP, SMALLJUMP, GAP)
 		VALUES (
-				(:trail.id),
+				(:id),
 				(:trail.name),
 				(:trail.zipCode),
 				(:SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES WHERE DIFFICULTY_COLOR = :trail.difficulty),
@@ -23,8 +23,12 @@ interface TrailDAO extends Closeable {
 				(:trail.woodRide),
 				(:trail.skinny),
 				(:trail.largeJump),
-				(:trail.smallJump)
+				(:trail.smallJump),
+				(:trail.gap)
 			)
 	""")
-	void postTrail(@BindBean("trail") Trail trail)
+	void postTrail(@Bind("id") Integer id, @BindBean("trail") Trail trail)
+
+	@SqlQuery("SELECT TRAIL_SEQ.NEXTVAL FROM DUAL")
+     Integer getNextId()
 }
