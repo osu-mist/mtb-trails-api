@@ -17,7 +17,7 @@ interface TrailDAO extends Closeable {
 				(:id),
 				(:trail.name),
 				(:trail.zipCode),
-				(:SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES WHERE DIFFICULTY_COLOR = :trail.difficulty),
+				(SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES WHERE DIFFICULTY_COLOR = :trail.difficulty),
 				(:trail.largeDrop),
 				(:trail.smallDrop),
 				(:trail.woodRide),
@@ -30,5 +30,13 @@ interface TrailDAO extends Closeable {
 	void postTrail(@Bind("id") Integer id, @BindBean("trail") Trail trail)
 
 	@SqlQuery("SELECT TRAIL_SEQ.NEXTVAL FROM DUAL")
-     Integer getNextId()
+	Integer getNextId()
+
+	@SqlQuery("""SELECT ID FROM TRAILS WHERE
+				NAME = :trail.name
+				AND ZIPCODE = :trail.zipCode
+				AND DIFFICULTY_ID = (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
+					WHERE DIFFICULTY_COLOR = :trail.difficulty)
+			""")
+	List <Integer> getConflictingTrails(@BindBean("trail") Trail trail)
 }

@@ -30,7 +30,7 @@ import org.skife.jdbi.v2.DBI
 @Produces(MediaType.APPLICATION_JSON)
 public class TrailsResource extends Resource {
 	private final TrailDAO trailDAO
-     private DBI dbi
+	private DBI dbi
 
 	TrailsResource(TrailDAO trailDAO, DBI dbi) {
 	    this.trailDAO = trailDAO
@@ -38,37 +38,37 @@ public class TrailsResource extends Resource {
 	}
 
 	ResourceObject trailResource(Trail trail) {
-         new ResourceObject(
-                 id: trail.id,
-                 type: 'Trail',
-                 attributes: trail,
-                 links: null
-         )
-     }
+	    new ResourceObject(
+			  id: trail.id,
+			  type: 'Trail',
+			  attributes: trail,
+			  links: null
+	    )
+	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-     @Produces(MediaType.APPLICATION_JSON)
-     Response postTrail (@Valid ResultObject newResultObject) {
-		Response.ResponseBuilder builder
-		try {
-			Trail trail = (Trail)newResultObject.data.attributes
-	         	if (trailValidator(trail)) {
-				Integer id = trailDAO.getNextId()
-			    	trail.id = id
-			    	trailDAO.postTrail(id, trail)
-			    	builder = created(trailResource(trail))
-			} else {
-	 	    		builder = Response.status(400)
-		    	}
-		} catch (Exception e) {
-			builder = Response.status(500)
+	@Produces(MediaType.APPLICATION_JSON)
+	Response postTrail (@Valid ResultObject newResultObject) {
+		Trail trail
+		Response response
+		trail = (Trail)newResultObject.data.attributes
+		if (trail.name == null || trail.zipCode == null || trail.difficulty == null) {
+				//required field missing
+				response = badRequest("Required field missing (name, zip code, or difficulty)").build()
+		} else {
+			List<Integer> conflictingTrails = trailDAO.getConflictingTrails(trail)
+				if (conflictingTrails.isEmpty()) {
+						Integer id = trailDAO.getNextId()
+						trail.id = id
+						trailDAO.postTrail(id, trail)
+						//trail object created
+						response = created(trailResource(trail)).build()
+				} else {
+					//Trail already exists
+					response = conflict().build()
+				}
 		}
-		builder.build()
-	}
-
-	Boolean trailValidator(Trail trail) {
-		//check that no trail exists with same name, zip code, and difficulty
-		true
+		response
 	}
 }
