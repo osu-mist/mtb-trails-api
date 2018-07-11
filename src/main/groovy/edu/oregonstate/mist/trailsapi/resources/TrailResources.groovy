@@ -57,8 +57,8 @@ public class TrailsResource extends Resource {
 				//required field missing
 				response = badRequest("Required field missing (name, zip code, or difficulty)").build()
 		} else {
-			List<Integer> conflictingTrails = trailDAO.getConflictingTrails(trail)
-				if (conflictingTrails.isEmpty()) {
+			Boolean conflictingTrails = trailDAO.getConflictingTrails(trail)
+				if (!conflictingTrails) {
 						Integer id = trailDAO.getNextId()
 						trail.id = id
 						trailDAO.postTrail(trail)

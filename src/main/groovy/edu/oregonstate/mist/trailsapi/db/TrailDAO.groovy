@@ -35,11 +35,12 @@ interface TrailDAO extends Closeable {
 	Integer getNextId()
 
 	@SqlQuery("""
-		SELECT ID FROM TRAILS WHERE
-			NAME = :trail.name
+		SELECT COUNT(*) FROM TRAILS WHERE
+			UPPER(REPLACE(REPLACE(NAME, ' ', ''), '''', ''))
+				= UPPER(REPLACE(REPLACE(:trail.name, ' ', ''), '''', ''))
 			AND ZIPCODE = :trail.zipCode
 			AND DIFFICULTY_ID = (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
 				WHERE DIFFICULTY_COLOR = :trail.difficulty)
 	""")
-	List <Integer> getConflictingTrails(@BindBean("trail") Trail trail)
+	Boolean getConflictingTrails(@BindBean("trail") Trail trail)
 }
