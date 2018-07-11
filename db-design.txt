@@ -12,9 +12,10 @@
 
 		trails
 			id						INTEGER NOT NULL, PRIMARY KEY
-			name						VARCHAR2(255 BYTE)
-			zipcode						SMALLINT
-			difficulty_id					SMALLINT
+			name						VARCHAR2(255 BYTE) NOT NULL
+			zipcode						SMALLINT NOT NULL
+			difficulty_id					SMALLINT NOT NULL
+			polyline					CLOB
 			largedrop					SMALLINT
 			smalldrop					SMALLINT
 			woodride					SMALLINT

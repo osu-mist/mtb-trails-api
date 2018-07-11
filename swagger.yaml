@@ -37,6 +37,10 @@ paths:
           description: "Incorrect syntax in request"
           schema:
             $ref: "#/definitions/Error"
+        409:
+          description: "Trail already exists"
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: "Internal server error"
           schema:
@@ -138,7 +142,7 @@ paths:
           schema:
             $ref: "#/definitions/Trails"
         400:
-          description: "Incorrect syntax in request"
+          description: "Incorrect syntax in request, or required fields missing"
           schema:
             $ref: "#/definitions/Error"
         500:
@@ -234,6 +238,7 @@ definitions:
     required:
     - "name"
     - "zipCode"
+    - "difficulty"
     properties:
       name:
         type: "string"
@@ -241,6 +246,7 @@ definitions:
       zipCode:
         description: "Zip code of trail head"
         type: "integer"
+        example : 97330
       difficulty:
         type: "string"
         enum:
@@ -248,6 +254,8 @@ definitions:
         - "Blue"
         - "Black"
         - "Double Black"
+      polyline:
+        type: "string"
       largeDrop:
         description: "Drops larger than 4 feet"
         type: "boolean"
