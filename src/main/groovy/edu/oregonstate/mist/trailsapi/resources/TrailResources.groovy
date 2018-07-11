@@ -71,4 +71,22 @@ public class TrailsResource extends Resource {
 		}
 		response
 	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	Response getTrail (	@QueryParam("name") List<String> name,
+					@QueryParam("difficulty") List<String> difficulty,
+					@QueryParam("mostDifficult") Optional<String> mostDifficult,
+					@QueryParam("leastDifficult") Optional<String> leastDifficult,
+					@QueryParam("zipCode") List<Integer> zipCode,
+					@QueryParam("smallDrop") Optional<Boolean> smallDrop,
+					@QueryParam("largeDrop") Optional<Boolean> largeDrop,
+					@QueryParam("woodRide") Optional<Boolean> woodRide,
+					@QueryParam("skinny") Optional<Boolean> skinny,
+					@QueryParam("largeJump") Optional<Boolean> largeJump,
+					@QueryParam("smallJump") Optional<Boolean> smallJump,
+					@QueryParam("gap") Optional<Boolean> gap) {
+			Response response
+			response
+		}
 }
