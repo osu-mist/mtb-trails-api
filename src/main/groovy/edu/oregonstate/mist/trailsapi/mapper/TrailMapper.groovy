@@ -13,6 +13,7 @@ public class TrailMapper implements ResultSetMapper<Trail> {
 			name: rs.getString('Name'),
 			zipCode: rs.getInt('zipCode'),
 			difficulty: rs.getString('DIFFICULTY'),
+			polyline: rs.getString('POLYLINE'),
 			largeDrop: rs.getBoolean('LARGEDROP'),
 			smallDrop: rs.getBoolean('SMALLDROP'),
 			woodRide: rs.getBoolean('WOODRIDE'),

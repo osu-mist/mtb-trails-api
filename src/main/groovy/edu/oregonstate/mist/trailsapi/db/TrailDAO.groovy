@@ -11,13 +11,14 @@ import org.skife.jdbi.v2.sqlobject.BindBean
 @RegisterMapper(TrailMapper)
 interface TrailDAO extends Closeable {
 	@SqlUpdate ("""
-		INSERT INTO TRAILS (ID, NAME, ZIPCODE, DIFFICULTY_ID, LARGEDROP, SMALLDROP, WOODRIDE, SKINNY,
-		LARGEJUMP, SMALLJUMP, GAP)
+		INSERT INTO TRAILS (ID, NAME, ZIPCODE, DIFFICULTY_ID, POLYLINE, LARGEDROP, SMALLDROP, WOODRIDE,
+			 SKINNY, LARGEJUMP, SMALLJUMP, GAP)
 		VALUES (
 				(:trail.id),
 				(:trail.name),
 				(:trail.zipCode),
 				(SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES WHERE DIFFICULTY_COLOR = :trail.difficulty),
+				(:trail.polyline),
 				(:trail.largeDrop),
 				(:trail.smallDrop),
 				(:trail.woodRide),
