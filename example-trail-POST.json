@@ -1,0 +1,19 @@
+{
+	"data": {
+		"id" : 0,
+		"type" : "Trail",
+	    	"attributes": {
+			"name": "Whoops",
+		     "zipCode": 97701,
+		     "difficulty": "Blue",
+			"polyline": "un|kGtukcVsdnBlhjK",
+		     "largeDrop": false,
+		     "smallDrop": true,
+		     "woodRide": false,
+		     "skinny": false,
+		     "largeJump": true,
+		     "smallJump": true,
+		     "gap": false
+	 	}
+	 }
+}
