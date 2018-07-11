@@ -34,6 +34,13 @@ interface TrailDAO extends Closeable {
 	""")
 	Integer getNextId()
 
+	/*************************************************************************************************
+	Function: getConflictingTrails
+	Description: Checks that no trails sharing a name, zip code, and difficulty exist in the databse.
+		Names are compared case insensitive after removing single quotes and spaces.
+	Input: Trail object that is to be checked for conflict
+	Output: Returns true if at least one conflict exists, false otherwise
+	*************************************************************************************************/
 	@SqlQuery("""
 		SELECT COUNT(*) FROM TRAILS WHERE
 			UPPER(REPLACE(REPLACE(NAME, ' ', ''), '''', ''))
