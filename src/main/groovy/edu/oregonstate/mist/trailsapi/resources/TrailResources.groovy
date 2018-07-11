@@ -53,7 +53,7 @@ public class TrailsResource extends Resource {
 		Trail trail
 		Response response
 		trail = (Trail)newResultObject.data.attributes
-		if (trail.name == null || trail.zipCode == null || trail.difficulty == null) {
+		if (!trailValidator(trail)) {
 				//required field missing
 				response = badRequest("Required field missing (name, zip code, or difficulty)").build()
 		} else {
@@ -70,5 +70,15 @@ public class TrailsResource extends Resource {
 				}
 		}
 		response
+	}
+
+	/*************************************************************************************************
+	Function: trailValidator
+	Description: Checks for validity of trail object
+	Input: Trail object that is to be POST or PUT
+	Output: Returns true if name, zip code, and difficulty are not null, and false otherwise
+	*************************************************************************************************/
+	Boolean trailValidator(Trail trail) {
+		trail.name && trail.zipCode && trail.difficulty
 	}
 }

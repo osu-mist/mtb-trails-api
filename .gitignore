@@ -27,3 +27,6 @@ build.properties
 *.cer
 *.keystore
 *.truststore
+
+# Test JSON
+body.json
