@@ -61,7 +61,7 @@ public class TrailsResource extends Resource {
 				if (conflictingTrails.isEmpty()) {
 						Integer id = trailDAO.getNextId()
 						trail.id = id
-						trailDAO.postTrail(id, trail)
+						trailDAO.postTrail(trail)
 						//trail object created
 						response = created(trailResource(trail)).build()
 				} else {
