@@ -15,6 +15,7 @@
 			name						VARCHAR2(255 BYTE) NOT NULL
 			zipcode						SMALLINT NOT NULL
 			difficulty_id					SMALLINT NOT NULL
+			polyline					CLOB
 			largedrop					SMALLINT
 			smalldrop					SMALLINT
 			woodride					SMALLINT

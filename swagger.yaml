@@ -254,6 +254,8 @@ definitions:
         - "Blue"
         - "Black"
         - "Double Black"
+      polyline:
+        type: "string"
       largeDrop:
         description: "Drops larger than 4 feet"
         type: "boolean"
