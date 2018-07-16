@@ -72,6 +72,7 @@ interface TrailDAO extends Closeable {
 			TRAILS.ID,
 			TRAILS.NAME,
 			TRAIL_DIFFICULTIES.DIFFICULTY_COLOR,
+			TRAILS.POLYLINE,
 			TRAILS.ZIPCODE,
 			TRAILS.SMALLDROP,
 			TRAILS.LARGEDROP,
@@ -99,15 +100,15 @@ interface TrailDAO extends Closeable {
 			AND (TRAILS.GAP = :gap OR :gap IS NULL)
 	""")
 	List<Trail> getTrailByQuery(@Bind("name") String name,
-							@Bind("difficulty") String difficulty,
-							@Bind("mostDifficult") String mostDifficult,
-		 					@Bind("leastDifficult") String leastDifficult,
-		 					@Bind("zipCode") Integer zipCode,
-		 					@Bind("smallDrop") Boolean smallDrop,
-		 					@Bind("largeDrop") Boolean largeDrop,
-		 					@Bind("woodRide") Boolean woodRide,
-		 					@Bind("skinny") Boolean skinny,
-		 					@Bind("largeJump") Boolean largeJump,
-		 					@Bind("smallJump") Boolean smallJump,
-		 					@Bind("gap") Boolean gap)
+					@Bind("difficulty") String difficulty,
+					@Bind("mostDifficult") String mostDifficult,
+		 			@Bind("leastDifficult") String leastDifficult,
+		 			@Bind("zipCode") Integer zipCode,
+		 			@Bind("smallDrop") Boolean smallDrop,
+		 			@Bind("largeDrop") Boolean largeDrop,
+		 			@Bind("woodRide") Boolean woodRide,
+		 			@Bind("skinny") Boolean skinny,
+		 			@Bind("largeJump") Boolean largeJump,
+		 			@Bind("smallJump") Boolean smallJump,
+		 			@Bind("gap") Boolean gap)
 }

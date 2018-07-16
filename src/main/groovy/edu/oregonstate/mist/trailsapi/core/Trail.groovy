@@ -1,6 +1,7 @@
 package edu.oregonstate.mist.trailsapi.core
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import java.sql.Clob
 
 //Optional fields have deafult values so that no exceptions are thrown in binding
 class Trail {
