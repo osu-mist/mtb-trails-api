@@ -84,11 +84,11 @@ public class TrailsResource extends Resource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	Response getTrail (	@QueryParam("name") List<String> name,
-					@QueryParam("difficulty") List<String> difficulty,
+	Response getTrail (@QueryParam("name") Optional<String> name,
+					@QueryParam("difficulty") Optional<String> difficulty,
 					@QueryParam("mostDifficult") Optional<String> mostDifficult,
 					@QueryParam("leastDifficult") Optional<String> leastDifficult,
-					@QueryParam("zipCode") List<Integer> zipCode,
+					@QueryParam("zipCode") Optional<Integer> zipCode,
 					@QueryParam("smallDrop") Optional<Boolean> smallDrop,
 					@QueryParam("largeDrop") Optional<Boolean> largeDrop,
 					@QueryParam("woodRide") Optional<Boolean> woodRide,
@@ -96,7 +96,10 @@ public class TrailsResource extends Resource {
 					@QueryParam("largeJump") Optional<Boolean> largeJump,
 					@QueryParam("smallJump") Optional<Boolean> smallJump,
 					@QueryParam("gap") Optional<Boolean> gap) {
-			Response response
-			response
+			List<Trail> trails = trailDAO.getTrailByQuery(name.or(""), difficulty.or(""),
+				mostDifficult.or(""), leastDifficult.or(""), zipCode.orNull(), smallDrop.orNull(),
+				largeDrop.orNull(), woodRide.orNull(), skinny.orNull(), largeJump.orNull(), smallJump.orNull(),
+				gap.orNull())
+			ok(trails).build()
 		}
 }
