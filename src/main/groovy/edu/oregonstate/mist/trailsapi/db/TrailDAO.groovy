@@ -85,7 +85,8 @@ interface TrailDAO extends Closeable {
 		 LEFT JOIN TRAIL_DIFFICULTIES ON TRAILS.DIFFICULTY_ID = TRAIL_DIFFICULTIES.DIFFICULTY_ID
 		 WHERE UPPER(REPLACE(REPLACE(TRAILS.NAME, ' ', ''), '''', ''))
 			= UPPER(REPLACE(REPLACE(:name, ' ', ''), '''', '')) OR :name IS NULL
-		 	AND (UPPER(TRAIL_DIFFICULTIES.DIFFICULTY_COLOR) = UPPER(:difficulty) OR :difficulty IS NULL)
+		 	AND (UPPER(TRAIL_DIFFICULTIES.DIFFICULTY_COLOR) = UPPER(:difficulty)
+				OR :difficulty IS NULL)
 			AND (TRAILS.DIFFICULTY_ID <= (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES WHERE
 				UPPER(DIFFICULTY_COLOR) = UPPER(:mostDifficult)) OR :mostDifficult IS NULL)
 			AND (TRAILS.DIFFICULTY_ID >= (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES WHERE
@@ -100,15 +101,15 @@ interface TrailDAO extends Closeable {
 			AND (TRAILS.GAP = :gap OR :gap IS NULL)
 	""")
 	List<Trail> getTrailByQuery(@Bind("name") String name,
-				@Bind("difficulty") String difficulty,
-				@Bind("mostDifficult") String mostDifficult,
-		 		@Bind("leastDifficult") String leastDifficult,
-		 		@Bind("zipCode") Integer zipCode,
-		 		@Bind("smallDrop") Boolean smallDrop,
-		 		@Bind("largeDrop") Boolean largeDrop,
-		 		@Bind("woodRide") Boolean woodRide,
-		 		@Bind("skinny") Boolean skinny,
-		 		@Bind("largeJump") Boolean largeJump,
-		 		@Bind("smallJump") Boolean smallJump,
-		 		@Bind("gap") Boolean gap)
+					@Bind("difficulty") String difficulty,
+					@Bind("mostDifficult") String mostDifficult,
+			 		@Bind("leastDifficult") String leastDifficult,
+			 		@Bind("zipCode") Integer zipCode,
+			 		@Bind("smallDrop") Boolean smallDrop,
+			 		@Bind("largeDrop") Boolean largeDrop,
+			 		@Bind("woodRide") Boolean woodRide,
+			 		@Bind("skinny") Boolean skinny,
+			 		@Bind("largeJump") Boolean largeJump,
+			 		@Bind("smallJump") Boolean smallJump,
+					@Bind("gap") Boolean gap)
 }
