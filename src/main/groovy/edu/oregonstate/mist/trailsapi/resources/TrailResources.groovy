@@ -85,17 +85,17 @@ public class TrailsResource extends Resource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	Response getTrail (@QueryParam("name") Optional<String> name,
-					@QueryParam("difficulty") Optional<String> difficulty,
-					@QueryParam("mostDifficult") Optional<String> mostDifficult,
-					@QueryParam("leastDifficult") Optional<String> leastDifficult,
-					@QueryParam("zipCode") Optional<Integer> zipCode,
-					@QueryParam("smallDrop") Optional<Boolean> smallDrop,
-					@QueryParam("largeDrop") Optional<Boolean> largeDrop,
-					@QueryParam("woodRide") Optional<Boolean> woodRide,
-					@QueryParam("skinny") Optional<Boolean> skinny,
-					@QueryParam("largeJump") Optional<Boolean> largeJump,
-					@QueryParam("smallJump") Optional<Boolean> smallJump,
-					@QueryParam("gap") Optional<Boolean> gap) {
+			   @QueryParam("difficulty") Optional<String> difficulty,
+			   @QueryParam("mostDifficult") Optional<String> mostDifficult,
+			   @QueryParam("leastDifficult") Optional<String> leastDifficult,
+			   @QueryParam("zipCode") Optional<Integer> zipCode,
+			   @QueryParam("smallDrop") Optional<Boolean> smallDrop,
+			   @QueryParam("largeDrop") Optional<Boolean> largeDrop,
+			   @QueryParam("woodRide") Optional<Boolean> woodRide,
+			   @QueryParam("skinny") Optional<Boolean> skinny,
+			   @QueryParam("largeJump") Optional<Boolean> largeJump,
+			   @QueryParam("smallJump") Optional<Boolean> smallJump,
+			   @QueryParam("gap") Optional<Boolean> gap) {
 			List<Trail> trails = trailDAO.getTrailByQuery(name.or(""), difficulty.or(""),
 				mostDifficult.or(""), leastDifficult.or(""), zipCode.orNull(), smallDrop.orNull(),
 				largeDrop.orNull(), woodRide.orNull(), skinny.orNull(), largeJump.orNull(), smallJump.orNull(),
