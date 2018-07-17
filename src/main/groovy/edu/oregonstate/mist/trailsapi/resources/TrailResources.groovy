@@ -46,6 +46,17 @@ public class TrailsResource extends Resource {
 	    )
 	}
 
+	ResultObject trailResult(List<Trail> trails) {
+		List<ResourceObject> trailResourceObjects = []
+		trails.each { trail ->
+			trailResourceObjects.add(trailResource(trail))
+		}
+		new ResultObject(
+			data: trailResourceObjects,
+			links: null
+		)
+	}
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	Response postTrail (@Valid ResultObject newResultObject) {
@@ -98,6 +109,6 @@ public class TrailsResource extends Resource {
 						mostDifficult, leastDifficult, zipCode, smallDrop,
 						largeDrop, woodRide, skinny, largeJump,
 						smallJump, gap)
-				   ok(trails).build()
+				   ok(trailResult(trails)).build()
 		}
 }
