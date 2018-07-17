@@ -14,7 +14,7 @@ public class TrailMapper implements ResultSetMapper<Trail> {
         name: rs.getString('NAME'),
         zipCode: rs.getInt('ZIPCODE'),
         difficulty: rs.getString('DIFFICULTY_COLOR'),
-        polyline: clobToString(rs.getClob('POLYLINE')),
+        polyline: rs.getString('POLYLINE'),
         largeDrop: rs.getBoolean('LARGEDROP'),
         smallDrop: rs.getBoolean('SMALLDROP'),
         woodRide: rs.getBoolean('WOODRIDE'),
@@ -23,14 +23,5 @@ public class TrailMapper implements ResultSetMapper<Trail> {
         smallJump: rs.getBoolean('SMALLJUMP'),
         gap: rs.getBoolean('GAP')
         )
-    }
-
-    String clobToString(Clob clob) {
-        if (clob) {
-            Integer clobLength = clob.length()
-            return clob.getSubString(1, clobLength)
-        } else {
-            return ""
-        }
     }
 }
