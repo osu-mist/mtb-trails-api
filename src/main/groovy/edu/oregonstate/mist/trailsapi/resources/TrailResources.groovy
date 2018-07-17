@@ -48,7 +48,6 @@ public class TrailsResource extends Resource {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	Response postTrail (@Valid ResultObject newResultObject) {
 		Trail trail
 		Response response
@@ -83,7 +82,6 @@ public class TrailsResource extends Resource {
 	}
 
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
 	Response getTrail (@QueryParam("name") String name,
 			   @QueryParam("difficulty") String difficulty,
 			   @QueryParam("mostDifficult") String mostDifficult,
