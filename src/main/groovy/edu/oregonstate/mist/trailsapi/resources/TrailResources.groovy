@@ -105,10 +105,10 @@ public class TrailsResource extends Resource {
 			   @QueryParam("largeJump") Boolean largeJump,
 			   @QueryParam("smallJump") Boolean smallJump,
 			   @QueryParam("gap") Boolean gap) {
-				   List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty,
-						mostDifficult, leastDifficult, zipCode, smallDrop,
-						largeDrop, woodRide, skinny, largeJump,
-						smallJump, gap)
-				   ok(trailResult(trails)).build()
+            List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty,
+			    mostDifficult, leastDifficult, zipCode, smallDrop,
+				largeDrop, woodRide, skinny, largeJump,
+				smallJump, gap)
+		    ok(trailResult(trails)).build()
 		}
 }
