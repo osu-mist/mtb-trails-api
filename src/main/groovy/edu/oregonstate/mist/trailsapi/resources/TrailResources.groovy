@@ -99,7 +99,11 @@ public class TrailsResource extends Resource {
 			   @QueryParam("gap") Boolean gap) {
 		List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult, leastDifficult,
 			zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,smallJump, gap)
-		ok(trailResult(trails)).build()
+		if (trails) {
+			return ok(trailResult(trails)).build()
+		} else {
+			return notFound().build()
+		}
 	}
 
 	@GET
