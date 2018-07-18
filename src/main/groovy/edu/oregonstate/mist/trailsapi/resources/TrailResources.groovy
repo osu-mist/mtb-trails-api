@@ -42,13 +42,15 @@ public class TrailsResource extends Resource {
 			  id: trail.id,
 			  type: 'Trail',
 			  attributes: trail,
-			  links: null
 	    )
+	}
+
+	ResultObject trailResult(List<Trail> trails) {
+		new ResultObject( data: trails.collect { trail -> trailResource(trail) })
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	Response postTrail (@Valid ResultObject newResultObject) {
 		Trail trail
 		Response response
@@ -80,5 +82,23 @@ public class TrailsResource extends Resource {
 	*************************************************************************************************/
 	Boolean trailValidator(Trail trail) {
 		trail.name && trail.zipCode && trail.difficulty
+	}
+
+	@GET
+	Response getTrail (@QueryParam("name") String name,
+			   @QueryParam("difficulty") String difficulty,
+			   @QueryParam("mostDifficult") String mostDifficult,
+			   @QueryParam("leastDifficult") String leastDifficult,
+			   @QueryParam("zipCode") Integer zipCode,
+			   @QueryParam("smallDrop") Boolean smallDrop,
+			   @QueryParam("largeDrop") Boolean largeDrop,
+			   @QueryParam("woodRide") Boolean woodRide,
+			   @QueryParam("skinny") Boolean skinny,
+			   @QueryParam("largeJump") Boolean largeJump,
+			   @QueryParam("smallJump") Boolean smallJump,
+			   @QueryParam("gap") Boolean gap) {
+		List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult, leastDifficult,
+			zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,smallJump, gap)
+		ok(trailResult(trails)).build()
 	}
 }
