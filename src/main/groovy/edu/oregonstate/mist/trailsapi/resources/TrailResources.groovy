@@ -42,19 +42,11 @@ public class TrailsResource extends Resource {
 			  id: trail.id,
 			  type: 'Trail',
 			  attributes: trail,
-			  links: null
 	    )
 	}
 
 	ResultObject trailResult(List<Trail> trails) {
-		List<ResourceObject> trailResourceObjects = []
-		trails.each { trail ->
-			trailResourceObjects.add(trailResource(trail))
-		}
-		new ResultObject(
-			data: trailResourceObjects,
-			links: null
-		)
+		new ResultObject( data: trails.collect { trail -> trailResource(trail) })
 	}
 
 	@POST
