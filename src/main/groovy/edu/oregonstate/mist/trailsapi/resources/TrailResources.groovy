@@ -85,7 +85,7 @@ public class TrailsResource extends Resource {
 	}
 
 	@GET
-	Response getTrail (@QueryParam("name") String name,
+	Response getByQuery (@QueryParam("name") String name,
 			   @QueryParam("difficulty") String difficulty,
 			   @QueryParam("mostDifficult") String mostDifficult,
 			   @QueryParam("leastDifficult") String leastDifficult,
@@ -100,5 +100,16 @@ public class TrailsResource extends Resource {
 		List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult, leastDifficult,
 			zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,smallJump, gap)
 		ok(trailResult(trails)).build()
+	}
+
+	@GET
+    @Path ('/{id: \\d+}')
+	Response getByID (@PathParam('id') Integer id) {
+		Trail trail = trailDAO.getTrailByID(id)
+		if (trail) {
+			return ok(trailResource(trail)).build()
+		} else {
+			return notFound().build()
+		}
 	}
 }
