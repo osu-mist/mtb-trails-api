@@ -54,22 +54,27 @@ public class TrailsResource extends Resource {
 	Response postTrail (@Valid ResultObject newResultObject) {
 		Trail trail
 		Response response
-		trail = (Trail)newResultObject.data.attributes
-		if (!trailValidator(trail)) {
-				//required field missing
-				response = badRequest("Required field missing (name, zip code, or difficulty)").build()
+		if (newResultObject) {
+			trail = (Trail)newResultObject.data.attributes
+			if (!trailValidator(trail)) {
+					//required field missing
+					response = badRequest("Required field missing (name, zip code, or difficulty)").build()
+			} else {
+				Boolean conflictingTrails = trailDAO.getConflictingTrails(trail)
+					if (!conflictingTrails) {
+							Integer id = trailDAO.getNextId()
+							trail.id = id
+							trailDAO.postTrail(trail)
+							//trail object created
+							response = created(trailResource(trail)).build()
+					} else {
+						//Trail already exists
+						response = conflict().build()
+					}
+			}
 		} else {
-			Boolean conflictingTrails = trailDAO.getConflictingTrails(trail)
-				if (!conflictingTrails) {
-						Integer id = trailDAO.getNextId()
-						trail.id = id
-						trailDAO.postTrail(trail)
-						//trail object created
-						response = created(trailResource(trail)).build()
-				} else {
-					//Trail already exists
-					response = conflict().build()
-				}
+			//Body data is missing
+			response = badRequest("No data in body to POST").build()
 		}
 		response
 	}
@@ -109,6 +114,28 @@ public class TrailsResource extends Resource {
 		if (trail) {
 			return ok(trailResource(trail)).build()
 		} else {
+			return notFound().build()
+		}
+	}
+
+	@PUT
+	@Path ('/{id: \\d+}')
+	@Consumes(MediaType.APPLICATION_JSON)
+	Response putTrail (@PathParam('id') Integer id, @Valid ResultObject newResultObject) {
+		Trail currentTrail = trailDAO.getTrailByID(id)
+		if (currentTrail) {
+			if (newResultObject) {
+				Trail trail = (Trail)newResultObject.data.attributes
+				trailDAO.updateTrail(id, trail.name, trail.difficulty, trail.zipCode, trail.smallDrop,
+					trail.largeDrop, trail.woodRide, trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
+				//Trail has been updated
+				return ok(trail).build()
+			} else {
+				//Body data is missing
+				return badRequest("No data in body to PUT").build()
+			}
+		} else {
+			//No trail at ID exists
 			return notFound().build()
 		}
 	}
