@@ -11,9 +11,9 @@ import org.skife.jdbi.v2.sqlobject.BindBean
 @RegisterMapper(TrailMapper)
 interface TrailDAO extends Closeable {
 
-	/**************************************************************************************************
+	/***********************************************************************************************
 	POST /trails
-	**************************************************************************************************/
+	***********************************************************************************************/
 	@SqlUpdate ("""
 		INSERT INTO TRAILS (ID, NAME, ZIPCODE, DIFFICULTY_ID, POLYLINE, LARGEDROP, SMALLDROP, WOODRIDE,
 			 SKINNY, LARGEJUMP, SMALLJUMP, GAP)
@@ -47,13 +47,13 @@ interface TrailDAO extends Closeable {
 			""")
 	List <Integer> getConflictingTrails(@BindBean("trail") Trail trail)
 
-	/*************************************************************************************************
+	/**********************************************************************************************
 	Function: getConflictingTrails
 	Description: Checks that no trails sharing a name, zip code, and difficulty exist in the database.
 		Names are compared case insensitive after removing single quotes and spaces.
 	Input: Trail object that is to be checked for conflict
 	Output: Returns true if at least one conflict exists, false otherwise
-	*************************************************************************************************/
+	**********************************************************************************************/
 	@SqlQuery("""
 		SELECT COUNT(*) FROM TRAILS WHERE
 			UPPER(REPLACE(REPLACE(NAME, ' ', ''), '''', ''))
@@ -64,9 +64,9 @@ interface TrailDAO extends Closeable {
 	""")
 	Boolean getConflictingTrails(@BindBean("trail") Trail trail)
 
-	/**************************************************************************************************
+	/***********************************************************************************************
 	GET /trails
-	**************************************************************************************************/
+	***********************************************************************************************/
 	@SqlQuery("""
 		SELECT
 			TRAILS.ID,
@@ -113,9 +113,9 @@ interface TrailDAO extends Closeable {
 				    @Bind("smallJump") Boolean smallJump,
 				    @Bind("gap") Boolean gap)
 
-	/**************************************************************************************************
+	/***********************************************************************************************
 	GET /trails/{trailID}
-	**************************************************************************************************/
+	***********************************************************************************************/
 	@SqlQuery("""
 		SELECT
 			TRAILS.ID,
@@ -135,4 +135,13 @@ interface TrailDAO extends Closeable {
 		 WHERE TRAILS.ID = :id
 	""")
 	Trail getTrailByID(@Bind("id") Integer id)
+
+    /***********************************************************************************************
+	DELETE /trails/{trailID}
+	***********************************************************************************************/
+	@SqlUpdate("""
+        DELETE FROM TRAILS
+        WHERE ID = :id
+    """)
+    void deleteTrail(@Bind("id") Integer id)
 }
