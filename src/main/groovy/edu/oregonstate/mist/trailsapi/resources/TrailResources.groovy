@@ -56,21 +56,21 @@ public class TrailsResource extends Resource {
         Response response
         trail = (Trail)newResultObject.data.attributes
         if (!trailValidator(trail)) {
-                //required field missing
-                response = badRequest(
-                    "Required field missing (name, zip code, or difficulty)").build()
+            //required field missing
+            response = badRequest(
+                "Required field missing (name, zip code, or difficulty)").build()
         } else {
             Boolean conflictingTrails = trailDAO.getConflictingTrails(trail)
-                if (!conflictingTrails) {
-                        Integer id = trailDAO.getNextId()
-                        trail.id = id
-                        trailDAO.postTrail(trail)
-                        //trail object created
-                        response = created(trailResource(trail)).build()
-                } else {
-                    //Trail already exists
-                    response = conflict().build()
-                }
+            if (!conflictingTrails) {
+                Integer id = trailDAO.getNextId()
+                    trail.id = id
+                    trailDAO.postTrail(trail)
+                    //trail object created
+                    response = created(trailResource(trail)).build()
+            } else {
+                 //Trail already exists
+                 response = conflict().build()
+            }
         }
         response
     }
