@@ -146,17 +146,17 @@ interface TrailDAO extends Closeable {
     @SqlUpdate("""
         UPDATE TRAILS
             SET
-                NAME = COALESCE(:name, NAME),
-                DIFFICULTY_ID = COALESCE((SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
-                WHERE DIFFICULTY_COLOR = :difficulty), DIFFICULTY_ID),
-                ZIPCODE = COALESCE(:zipCode, ZIPCODE),
-                SMALLDROP = COALESCE(:smallDrop, SMALLDROP),
-                LARGEDROP = COALESCE(:largeDrop, LARGEDROP),
-                WOODRIDE = COALESCE(:woodRide, WOODRIDE),
-                SKINNY = COALESCE(:skinny, SKINNY),
-                LARGEJUMP = COALESCE(:largeJump, LARGEJUMP),
-                SMALLJUMP = COALESCE(:smallJump, SMALLJUMP),
-                GAP = COALESCE(:gap, GAP)
+                NAME = :name,
+                DIFFICULTY_ID = (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
+                    WHERE DIFFICULTY_COLOR = :difficulty),
+                ZIPCODE = :zipCode,
+                SMALLDROP = :smallDrop,
+                LARGEDROP = :largeDrop,
+                WOODRIDE = :woodRide,
+                SKINNY = :skinny,
+                LARGEJUMP = :largeJump,
+                SMALLJUMP = :smallJump,
+                GAP = :gap
             WHERE ID = :id
     """)
     void updateTrail(@Bind("id") Integer id,

@@ -119,15 +119,15 @@ public class TrailsResource extends Resource {
     Response putTrail (@PathParam('id') Integer id, @Valid ResultObject newResultObject) {
         Trail currentTrail = trailDAO.getTrailByID(id)
         if (currentTrail) {
-            if (newResultObject) {
+            if (newResultObject && trailValidator(trail)) {
                 Trail trail = (Trail)newResultObject.data.attributes
                 trailDAO.updateTrail(id, trail.name, trail.difficulty, trail.zipCode, trail.smallDrop,
                 trail.largeDrop, trail.woodRide, trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
                 //Trail has been updated
                 ok(trail).build()
             } else {
-                //Body data is missing
-                badRequest("No data in body to PUT").build()
+                //Body data is missing or trail is not valid
+                badRequest().build()
             }
         } else {
             //No trail at ID exists
