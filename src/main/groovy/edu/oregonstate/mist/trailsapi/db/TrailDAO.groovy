@@ -112,4 +112,27 @@ interface TrailDAO extends Closeable {
 				    @Bind("largeJump") Boolean largeJump,
 				    @Bind("smallJump") Boolean smallJump,
 				    @Bind("gap") Boolean gap)
+
+	/**************************************************************************************************
+	GET /trails/{trailID}
+	**************************************************************************************************/
+	@SqlQuery("""
+		SELECT
+			TRAILS.ID,
+			TRAILS.NAME,
+			TRAIL_DIFFICULTIES.DIFFICULTY_COLOR,
+			TRAILS.POLYLINE,
+			TRAILS.ZIPCODE,
+			TRAILS.SMALLDROP,
+			TRAILS.LARGEDROP,
+			TRAILS.WOODRIDE,
+			TRAILS.SKINNY,
+			TRAILS.LARGEJUMP,
+			TRAILS.SMALLJUMP,
+			TRAILS.GAP
+		 FROM TRAILS
+		 LEFT JOIN TRAIL_DIFFICULTIES ON TRAILS.DIFFICULTY_ID = TRAIL_DIFFICULTIES.DIFFICULTY_ID
+		 WHERE TRAILS.ID = :id
+	""")
+	Trail getTrailByID(@Bind("id") Integer id)
 }
