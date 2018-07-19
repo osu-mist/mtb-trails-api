@@ -102,14 +102,14 @@ public class TrailsResource extends Resource {
 		ok(trailResult(trails)).build()
 	}
 
-	@GET
+    @GET
     @Path ('/{id: \\d+}')
 	Response getByID (@PathParam('id') Integer id) {
 		Trail trail = trailDAO.getTrailByID(id)
 		if (trail) {
-			return ok(trailResource(trail)).build()
+			ok(trailResource(trail)).build()
 		} else {
-			return notFound().build()
+			notFound().build()
 		}
 	}
 }
