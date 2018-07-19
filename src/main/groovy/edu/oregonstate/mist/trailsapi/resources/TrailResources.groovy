@@ -39,9 +39,9 @@ public class TrailsResource extends Resource {
 
     ResourceObject trailResource(Trail trail) {
         new ResourceObject(
-              id: trail.id,
-              type: 'Trail',
-              attributes: trail,
+            id: trail.id,
+            type: 'Trail',
+            attributes: trail,
         )
     }
 
@@ -57,30 +57,29 @@ public class TrailsResource extends Resource {
         trail = (Trail)newResultObject.data.attributes
         if (!trailValidator(trail)) {
             //required field missing
-            response = badRequest(
-                "Required field missing (name, zip code, or difficulty)").build()
+            response = badRequest("Required field missing (name, zip code, or difficulty)").build()
         } else {
             Boolean conflictingTrails = trailDAO.getConflictingTrails(trail)
             if (!conflictingTrails) {
                 Integer id = trailDAO.getNextId()
-                    trail.id = id
-                    trailDAO.postTrail(trail)
-                    //trail object created
-                    response = created(trailResource(trail)).build()
+                trail.id = id
+                trailDAO.postTrail(trail)
+                //trail object created
+                response = created(trailResource(trail)).build()
             } else {
-                 //Trail already exists
-                 response = conflict().build()
-            }
+                //Trail already exists
+                response = conflict().build()
+             }
         }
         response
     }
 
-    /**********************************************************************************************
+    /*************************************************************************************************
     Function: trailValidator
     Description: Checks for validity of trail object
     Input: Trail object that is to be POST or PUT
     Output: Returns true if name, zip code, and difficulty are not null, and false otherwise
-    **********************************************************************************************/
+    *************************************************************************************************/
     Boolean trailValidator(Trail trail) {
         trail.name && trail.zipCode && trail.difficulty
     }
@@ -98,9 +97,8 @@ public class TrailsResource extends Resource {
                          @QueryParam("largeJump") Boolean largeJump,
                          @QueryParam("smallJump") Boolean smallJump,
                          @QueryParam("gap") Boolean gap) {
-        List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult,
-            leastDifficult, zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,
-            smallJump, gap)
+        List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult, leastDifficult,
+            zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,smallJump, gap)
         ok(trailResult(trails)).build()
     }
 
@@ -114,6 +112,29 @@ public class TrailsResource extends Resource {
             notFound().build()
         }
     }
+
+    @PUT
+    @Path ('/{id: \\d+}')
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response putTrail (@PathParam('id') Integer id, @Valid ResultObject newResultObject) {
+        Trail currentTrail = trailDAO.getTrailByID(id)
+        if (currentTrail) {
+            if (newResultObject) {
+                Trail trail = (Trail)newResultObject.data.attributes
+                trailDAO.updateTrail(id, trail.name, trail.difficulty, trail.zipCode, trail.smallDrop,
+                trail.largeDrop, trail.woodRide, trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
+                //Trail has been updated
+                ok(trail).build()
+            } else {
+                //Body data is missing
+                badRequest("No data in body to PUT").build()
+            }
+        } else {
+            //No trail at ID exists
+            return notFound().build()
+        }
+    }
+}
 
     @DELETE
     @Path ('/{id: \\d+}')
