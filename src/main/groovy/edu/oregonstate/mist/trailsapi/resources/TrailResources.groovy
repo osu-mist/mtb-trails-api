@@ -64,7 +64,9 @@ public class TrailsResource extends Resource {
             if (!conflictingTrails) {
                 Integer id = trailDAO.getNextId()
                 trail.id = id
-                trailDAO.postTrail(trail)
+                trailDAO.postTrail(trail.id, trail.name, trail.difficulty, trail.zipCode,
+                    trail.polyline, trail.smallDrop, trail.largeDrop, trail.woodRide,
+                    trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
                 //trail object created
                 response = created(trailResource(trail)).build()
             } else {
@@ -114,10 +116,11 @@ public class TrailsResource extends Resource {
             if (newResultObject && trailValidator((Trail)newResultObject.data.attributes)) {
                 Trail trail = (Trail)newResultObject.data.attributes
                 trailDAO.updateTrail(id, trail.name, trail.difficulty, trail.zipCode,
-                    trail.smallDrop, trail.largeDrop, trail.woodRide, trail.skinny,
-                    trail.largeJump, trail.smallJump, trail.gap)
+                    trail.polyline, trail.smallDrop, trail.largeDrop, trail.woodRide,
+                    trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
                 //Trail has been updated
-                ok(trail).build()
+                trail.id = id
+                ok(trailResource(trail)).build()
             } else {
                 //Body data is missing or trail is not valid
                 badRequest(

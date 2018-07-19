@@ -18,22 +18,33 @@ interface TrailDAO extends Closeable {
         INSERT INTO TRAILS (ID, NAME, ZIPCODE, DIFFICULTY_ID, POLYLINE, LARGEDROP, SMALLDROP,
             WOODRIDE, SKINNY, LARGEJUMP, SMALLJUMP, GAP)
         VALUES (
-            (:trail.id),
-            (:trail.name),
-            (:trail.zipCode),
+            (:id),
+            (:name),
+            (:zipCode),
             (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
-                WHERE DIFFICULTY_COLOR = :trail.difficulty),
-            (:trail.polyline),
-            (:trail.largeDrop),
-            (:trail.smallDrop),
-            (:trail.woodRide),
-            (:trail.skinny),
-            (:trail.largeJump),
-            (:trail.smallJump),
-            (:trail.gap)
+                WHERE DIFFICULTY_COLOR = :difficulty),
+            (:polyline),
+            (:largeDrop),
+            (:smallDrop),
+            (:woodRide),
+            (:skinny),
+            (:largeJump),
+            (:smallJump),
+            (:gap)
         )
     """)
-    void postTrail(@BindBean("trail") Trail trail)
+    void postTrail(@Bind("id") Integer id,
+                   @Bind("name") String name,
+                   @Bind("difficulty") String difficulty,
+                   @Bind("zipCode") Integer zipCode,
+                   @Bind("polyline") String polyline,
+                   @Bind("smallDrop") Boolean smallDrop,
+                   @Bind("largeDrop") Boolean largeDrop,
+                   @Bind("woodRide") Boolean woodRide,
+                   @Bind("skinny") Boolean skinny,
+                   @Bind("largeJump") Boolean largeJump,
+                   @Bind("smallJump") Boolean smallJump,
+                   @Bind("gap") Boolean gap)
 
     @SqlQuery("""
         SELECT TRAIL_SEQ.NEXTVAL FROM DUAL
@@ -123,6 +134,7 @@ interface TrailDAO extends Closeable {
                 DIFFICULTY_ID = (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
                     WHERE DIFFICULTY_COLOR = :difficulty),
                 ZIPCODE = :zipCode,
+                POLYLINE = :polyline,
                 SMALLDROP = :smallDrop,
                 LARGEDROP = :largeDrop,
                 WOODRIDE = :woodRide,
@@ -136,6 +148,7 @@ interface TrailDAO extends Closeable {
                      @Bind("name") String name,
                      @Bind("difficulty") String difficulty,
                      @Bind("zipCode") Integer zipCode,
+                     @Bind("polyline") String polyline,
                      @Bind("smallDrop") Boolean smallDrop,
                      @Bind("largeDrop") Boolean largeDrop,
                      @Bind("woodRide") Boolean woodRide,
