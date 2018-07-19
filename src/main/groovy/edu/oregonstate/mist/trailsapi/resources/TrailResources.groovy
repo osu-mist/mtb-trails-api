@@ -69,7 +69,7 @@ public class TrailsResource extends Resource {
             } else {
                 //Trail already exists
                 response = conflict().build()
-             }
+            }
         }
         response
     }
