@@ -40,33 +40,6 @@ interface TrailDAO extends Closeable {
     """)
     Integer getNextId()
 
-    @SqlQuery("""
-        SELECT ID FROM TRAILS WHERE
-            NAME = :trail.name
-            AND ZIPCODE = :trail.zipCode
-            AND DIFFICULTY_ID = (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
-                WHERE DIFFICULTY_COLOR = :trail.difficulty)
-    """)
-    List <Integer> getConflictingTrails(@BindBean("trail") Trail trail)
-
-    /**********************************************************************************************
-    Function: getConflictingTrails
-    Description: Checks that no trails sharing a name, zip code, and difficulty exist in
-        the database.
-    Names are compared case insensitive after removing single quotes and spaces.
-    Input: Trail object that is to be checked for conflict
-    Output: Returns true if at least one conflict exists, false otherwise
-    **********************************************************************************************/
-    @SqlQuery("""
-        SELECT COUNT(*) FROM TRAILS WHERE
-            UPPER(REPLACE(REPLACE(NAME, ' ', ''), '''', ''))
-                = UPPER(REPLACE(REPLACE(:trail.name, ' ', ''), '''', ''))
-        AND ZIPCODE = :trail.zipCode
-        AND DIFFICULTY_ID = (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
-            WHERE DIFFICULTY_COLOR = :trail.difficulty)
-    """)
-    Boolean getConflictingTrails(@BindBean("trail") Trail trail)
-
     /***********************************************************************************************
     GET /trails
     ***********************************************************************************************/
@@ -170,4 +143,34 @@ interface TrailDAO extends Closeable {
                      @Bind("largeJump") Boolean largeJump,
                      @Bind("smallJump") Boolean smallJump,
                      @Bind("gap") Boolean gap)
+
+    /**********************************************************************************************
+    Function: getConflictingTrails
+    Description: Checks that no trails sharing a name, zip code, and difficulty exist in
+        the database.
+    Names are compared case insensitive after removing single quotes and spaces.
+    Input: Trail object that is to be checked for conflict
+    Output: Returns true if at least one conflict exists, false otherwise
+    **********************************************************************************************/
+    @SqlQuery("""
+        SELECT COUNT(*) FROM TRAILS WHERE
+            UPPER(REPLACE(REPLACE(NAME, ' ', ''), '''', ''))
+                = UPPER(REPLACE(REPLACE(:trail.name, ' ', ''), '''', ''))
+        AND ZIPCODE = :trail.zipCode
+        AND DIFFICULTY_ID = (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
+            WHERE DIFFICULTY_COLOR = :trail.difficulty)
+    """)
+    Boolean getConflictingTrails(@BindBean("trail") Trail trail)
+
+    /**********************************************************************************************
+    Function: difficultyValidator
+    Description: Checks that provided difficulty is in table of difficulty colors
+    Input: Difficulty color string provided by API user
+    Output: Returns true if difficulty color is in table, false otherwise
+    **********************************************************************************************/
+    @SqlQuery("""
+        SELECT COUNT(*) FROM TRAIL_DIFFICULTIES
+        WHERE DIFFICULTY_COLOR = :difficulty
+    """)
+    Boolean difficultyValidator(@Bind("difficulty") String difficulty)
 }
