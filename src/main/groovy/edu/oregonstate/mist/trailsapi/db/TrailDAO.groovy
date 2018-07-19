@@ -15,23 +15,23 @@ interface TrailDAO extends Closeable {
     POST /trails
     ***********************************************************************************************/
     @SqlUpdate ("""
-    INSERT INTO TRAILS (ID, NAME, ZIPCODE, DIFFICULTY_ID, POLYLINE, LARGEDROP, SMALLDROP,
-        WOODRIDE, SKINNY, LARGEJUMP, SMALLJUMP, GAP)
-    VALUES (
-        (:trail.id),
-        (:trail.name),
-        (:trail.zipCode),
-        (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
-            WHERE DIFFICULTY_COLOR = :trail.difficulty),
-        (:trail.polyline),
-        (:trail.largeDrop),
-        (:trail.smallDrop),
-        (:trail.woodRide),
-        (:trail.skinny),
-        (:trail.largeJump),
-        (:trail.smallJump),
-        (:trail.gap)
-    )
+        INSERT INTO TRAILS (ID, NAME, ZIPCODE, DIFFICULTY_ID, POLYLINE, LARGEDROP, SMALLDROP,
+            WOODRIDE, SKINNY, LARGEJUMP, SMALLJUMP, GAP)
+        VALUES (
+            (:trail.id),
+            (:trail.name),
+            (:trail.zipCode),
+            (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
+                WHERE DIFFICULTY_COLOR = :trail.difficulty),
+            (:trail.polyline),
+            (:trail.largeDrop),
+            (:trail.smallDrop),
+            (:trail.woodRide),
+            (:trail.skinny),
+            (:trail.largeJump),
+            (:trail.smallJump),
+            (:trail.gap)
+        )
     """)
     void postTrail(@BindBean("trail") Trail trail)
 
@@ -144,20 +144,20 @@ interface TrailDAO extends Closeable {
     Updates values if binded value is not null
     ***********************************************************************************************/
     @SqlUpdate("""
-    UPDATE TRAILS
-        SET
-            NAME = COALESCE(:name, NAME),
-            DIFFICULTY_ID = COALESCE((SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
-            WHERE DIFFICULTY_COLOR = :difficulty), DIFFICULTY_ID),
-            ZIPCODE = COALESCE(:zipCode, ZIPCODE),
-            SMALLDROP = COALESCE(:smallDrop, SMALLDROP),
-            LARGEDROP = COALESCE(:largeDrop, LARGEDROP),
-            WOODRIDE = COALESCE(:woodRide, WOODRIDE),
-            SKINNY = COALESCE(:skinny, SKINNY),
-            LARGEJUMP = COALESCE(:largeJump, LARGEJUMP),
-            SMALLJUMP = COALESCE(:smallJump, SMALLJUMP),
-            GAP = COALESCE(:gap, GAP)
-        WHERE ID = :id
+        UPDATE TRAILS
+            SET
+                NAME = COALESCE(:name, NAME),
+                DIFFICULTY_ID = COALESCE((SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
+                WHERE DIFFICULTY_COLOR = :difficulty), DIFFICULTY_ID),
+                ZIPCODE = COALESCE(:zipCode, ZIPCODE),
+                SMALLDROP = COALESCE(:smallDrop, SMALLDROP),
+                LARGEDROP = COALESCE(:largeDrop, LARGEDROP),
+                WOODRIDE = COALESCE(:woodRide, WOODRIDE),
+                SKINNY = COALESCE(:skinny, SKINNY),
+                LARGEJUMP = COALESCE(:largeJump, LARGEJUMP),
+                SMALLJUMP = COALESCE(:smallJump, SMALLJUMP),
+                GAP = COALESCE(:gap, GAP)
+            WHERE ID = :id
     """)
     void updateTrail(@Bind("id") Integer id,
                      @Bind("name") String name,
