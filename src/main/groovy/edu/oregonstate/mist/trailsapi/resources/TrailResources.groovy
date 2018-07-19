@@ -86,30 +86,30 @@ public class TrailsResource extends Resource {
 
     @GET
     Response getByQuery (@QueryParam("name") String name,
-               @QueryParam("difficulty") String difficulty,
-               @QueryParam("mostDifficult") String mostDifficult,
-               @QueryParam("leastDifficult") String leastDifficult,
-               @QueryParam("zipCode") Integer zipCode,
-               @QueryParam("smallDrop") Boolean smallDrop,
-               @QueryParam("largeDrop") Boolean largeDrop,
-               @QueryParam("woodRide") Boolean woodRide,
-               @QueryParam("skinny") Boolean skinny,
-               @QueryParam("largeJump") Boolean largeJump,
-               @QueryParam("smallJump") Boolean smallJump,
-               @QueryParam("gap") Boolean gap) {
+                         @QueryParam("difficulty") String difficulty,
+                         @QueryParam("mostDifficult") String mostDifficult,
+                         @QueryParam("leastDifficult") String leastDifficult,
+                         @QueryParam("zipCode") Integer zipCode,
+                         @QueryParam("smallDrop") Boolean smallDrop,
+                         @QueryParam("largeDrop") Boolean largeDrop,
+                         @QueryParam("woodRide") Boolean woodRide,
+                         @QueryParam("skinny") Boolean skinny,
+                         @QueryParam("largeJump") Boolean largeJump,
+                         @QueryParam("smallJump") Boolean smallJump,
+                         @QueryParam("gap") Boolean gap) {
         List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult, leastDifficult,
             zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,smallJump, gap)
         ok(trailResult(trails)).build()
     }
 
     @GET
-        @Path ('/{id: \\d+}')
-        Response getByID (@PathParam('id') Integer id) {
-            Trail trail = trailDAO.getTrailByID(id)
+    @Path ('/{id: \\d+}')
+    Response getByID (@PathParam('id') Integer id) {
+        Trail trail = trailDAO.getTrailByID(id)
         if (trail) {
-                ok(trailResource(trail)).build()
+            ok(trailResource(trail)).build()
         } else {
-                notFound().build()
+            notFound().build()
         }
-        }
+    }
 }
