@@ -1,4 +1,3 @@
-
 package edu.oregonstate.mist.trailsapi.resources
 
 import edu.oregonstate.mist.trailsapi.core.Trail
