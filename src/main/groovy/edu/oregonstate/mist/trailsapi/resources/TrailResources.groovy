@@ -113,7 +113,7 @@ public class TrailsResource extends Resource {
         } else {
             notFound().build()
         }
-}
+    }
 
     @PUT
     @Path ('/{id: \\d+}')
