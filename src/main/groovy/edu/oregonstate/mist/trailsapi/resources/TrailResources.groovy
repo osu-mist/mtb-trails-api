@@ -101,15 +101,15 @@ public class TrailsResource extends Resource {
 			zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,smallJump, gap)
 		ok(trailResult(trails)).build()
 	}
-
-    @GET
-    @Path ('/{id: \\d+}')
-	Response getByID (@PathParam('id') Integer id) {
-		Trail trail = trailDAO.getTrailByID(id)
+	
+	@GET
+    	@Path ('/{id: \\d+}')
+    	Response getByID (@PathParam('id') Integer id) {
+        	Trail trail = trailDAO.getTrailByID(id)
 		if (trail) {
-			ok(trailResource(trail)).build()
+	    		ok(trailResource(trail)).build()
 		} else {
-			notFound().build()
+	    		notFound().build()
 		}
-	}
+    	}
 }
