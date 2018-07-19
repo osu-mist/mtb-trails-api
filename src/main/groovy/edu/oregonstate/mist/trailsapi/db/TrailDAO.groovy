@@ -141,7 +141,7 @@ interface TrailDAO extends Closeable {
     Updates values if binded value is not null
     **************************************************************************************************/
     @SqlUpdate("""
-    UPDATE TRAILS
+        UPDATE TRAILS
         SET
             NAME = COALESCE(:name, NAME),
             DIFFICULTY_ID = COALESCE((SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
