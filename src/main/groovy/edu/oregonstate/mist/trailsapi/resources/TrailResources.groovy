@@ -74,12 +74,12 @@ public class TrailsResource extends Resource {
         response
     }
 
-    /*************************************************************************************************
+    /**********************************************************************************************
     Function: trailValidator
     Description: Checks for validity of trail object
     Input: Trail object that is to be POST or PUT
     Output: Returns true if name, zip code, and difficulty are not null, and false otherwise
-    *************************************************************************************************/
+    **********************************************************************************************/
     Boolean trailValidator(Trail trail) {
         trail.name && trail.zipCode && trail.difficulty
     }
@@ -97,8 +97,9 @@ public class TrailsResource extends Resource {
                          @QueryParam("largeJump") Boolean largeJump,
                          @QueryParam("smallJump") Boolean smallJump,
                          @QueryParam("gap") Boolean gap) {
-        List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult, leastDifficult,
-            zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,smallJump, gap)
+        List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult,
+            leastDifficult, zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,
+            smallJump, gap)
         ok(trailResult(trails)).build()
     }
 
@@ -121,8 +122,9 @@ public class TrailsResource extends Resource {
         if (currentTrail) {
             if (newResultObject) {
                 Trail trail = (Trail)newResultObject.data.attributes
-                trailDAO.updateTrail(id, trail.name, trail.difficulty, trail.zipCode, trail.smallDrop,
-                trail.largeDrop, trail.woodRide, trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
+                trailDAO.updateTrail(id, trail.name, trail.difficulty, trail.zipCode,
+                trail.smallDrop, trail.largeDrop, trail.woodRide, trail.skinny, trail.largeJump,
+                trail.smallJump, trail.gap)
                 //Trail has been updated
                 ok(trail).build()
             } else {
@@ -134,7 +136,6 @@ public class TrailsResource extends Resource {
             return notFound().build()
         }
     }
-}
 
     @DELETE
     @Path ('/{id: \\d+}')
