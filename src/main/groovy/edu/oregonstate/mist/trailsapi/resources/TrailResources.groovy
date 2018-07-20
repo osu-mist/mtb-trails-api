@@ -45,7 +45,11 @@ public class TrailsResource extends Resource {
         )
     }
 
-    ResultObject trailResult(List<Trail> trails) {
+    ResultObject trailResult(Trail trail) {
+        new ResultObject( data: trailResource(trail) )
+    }
+
+    ResultObject trailsResult(List<Trail> trails) {
         new ResultObject( data: trails.collect { trail -> trailResource(trail) })
     }
 
@@ -53,11 +57,15 @@ public class TrailsResource extends Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     Response postTrail (@Valid ResultObject newResultObject) {
         Trail trail
-        Response response
-        trail = (Trail)newResultObject.data.attributes
-        if (!trailValidator(trail)) {
+        try {
+            trail = (Trail)newResultObject.data.attributes
+        } catch (Exception e) {
+            return badRequest(
+                "All data is null, or invalid data type for at least one field").build()
+        }
+        if ((!trail) || !trailValidator(trail)) {
             //required field missing
-            response = badRequest(
+            badRequest(
                 "Required field missing or inavlid (name, zip code, or difficulty)").build()
         } else {
             Boolean conflictingTrails = trailDAO.getConflictingTrails(trail)
@@ -68,13 +76,12 @@ public class TrailsResource extends Resource {
                     trail.polyline, trail.smallDrop, trail.largeDrop, trail.woodRide,
                     trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
                 //trail object created
-                response = created(trailResource(trail)).build()
+                created(trailResult(trail)).build()
             } else {
                 //Trail already exists
-                response = conflict().build()
+                conflict().build()
              }
         }
-        response
     }
 
     @GET
@@ -93,7 +100,7 @@ public class TrailsResource extends Resource {
         List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult,
             leastDifficult, zipCode, smallDrop,largeDrop, woodRide, skinny,
             largeJump, smallJump, gap)
-        ok(trailResult(trails)).build()
+        ok(trailsResult(trails)).build()
     }
 
     @GET
@@ -101,7 +108,8 @@ public class TrailsResource extends Resource {
     Response getByID (@PathParam('id') Integer id) {
         Trail trail = trailDAO.getTrailByID(id)
         if (trail) {
-            ok(trailResource(trail)).build()
+            trail.id = id
+            ok(trailResult(trail)).build()
         } else {
             notFound().build()
         }
@@ -113,14 +121,20 @@ public class TrailsResource extends Resource {
     Response putTrail (@PathParam('id') Integer id, @Valid ResultObject newResultObject) {
         Trail currentTrail = trailDAO.getTrailByID(id)
         if (currentTrail) {
-            if (newResultObject && trailValidator((Trail)newResultObject.data.attributes)) {
-                Trail trail = (Trail)newResultObject.data.attributes
+            Trail trail
+            try {
+                trail = (Trail)newResultObject.data.attributes
+            } catch (Exception e) {
+                return badRequest(
+                    "All data is null, or invalid data type for at least one field").build()
+            }
+            if (trail && trailValidator(trail)) {
                 trailDAO.updateTrail(id, trail.name, trail.difficulty, trail.zipCode,
                     trail.polyline, trail.smallDrop, trail.largeDrop, trail.woodRide,
                     trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
                 //Trail has been updated
                 trail.id = id
-                ok(trailResource(trail)).build()
+                ok(trailResult(trail)).build()
             } else {
                 //Body data is missing or trail is not valid
                 badRequest(
