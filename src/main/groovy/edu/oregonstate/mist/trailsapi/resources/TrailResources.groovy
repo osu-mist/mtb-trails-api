@@ -146,6 +146,18 @@ public class TrailsResource extends Resource {
         }
     }
 
+    @DELETE
+    @Path ('/{id: \\d+}')
+    Response deleteTrail (@PathParam('id') Integer id) {
+        Trail trail = trailDAO.getTrailByID(id)
+        if (trail) {
+            trailDAO.deleteTrail(id)
+            ok().build()
+        } else {
+            notFound().build()
+        }
+    }
+  
     /**********************************************************************************************
     Function: trailValidator
     Description: Checks for validity of trail object

@@ -186,4 +186,13 @@ interface TrailDAO extends Closeable {
         WHERE DIFFICULTY_COLOR = :difficulty
     """)
     Boolean difficultyValidator(@Bind("difficulty") String difficulty)
+
+    /***********************************************************************************************
+    DELETE /trails/{trailID}
+    ***********************************************************************************************/
+	  @SqlUpdate("""
+        DELETE FROM TRAILS
+        WHERE ID = :id
+    """)
+    void deleteTrail(@Bind("id") Integer id)
 }
