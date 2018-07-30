@@ -45,7 +45,11 @@ public class TrailsResource extends Resource {
         )
     }
 
-    ResultObject trailResult(List<Trail> trails) {
+    ResultObject trailResult(Trail trail) {
+        new ResultObject( data: trailResource(trail) )
+    }
+
+    ResultObject trailsResult(List<Trail> trails) {
         new ResultObject( data: trails.collect { trail -> trailResource(trail) })
     }
 
@@ -53,35 +57,31 @@ public class TrailsResource extends Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     Response postTrail (@Valid ResultObject newResultObject) {
         Trail trail
-        Response response
-        trail = (Trail)newResultObject.data.attributes
-        if (!trailValidator(trail)) {
+        try {
+            trail = (Trail)newResultObject.data.attributes
+        } catch (Exception e) {
+            return badRequest(
+                "All data is null, or invalid data type for at least one field").build()
+        }
+        if ((!trail) || !trailValidator(trail)) {
             //required field missing
-            response = badRequest("Required field missing (name, zip code, or difficulty)").build()
+            badRequest(
+                "Required field missing or inavlid (name, zip code, or difficulty)").build()
         } else {
             Boolean conflictingTrails = trailDAO.getConflictingTrails(trail)
             if (!conflictingTrails) {
                 Integer id = trailDAO.getNextId()
                 trail.id = id
-                trailDAO.postTrail(trail)
+                trailDAO.postTrail(trail.id, trail.name, trail.difficulty, trail.zipCode,
+                    trail.polyline, trail.smallDrop, trail.largeDrop, trail.woodRide,
+                    trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
                 //trail object created
-                response = created(trailResource(trail)).build()
+                created(trailResult(trail)).build()
             } else {
                 //Trail already exists
-                response = conflict().build()
+                conflict().build()
              }
         }
-        response
-    }
-
-    /**********************************************************************************************
-    Function: trailValidator
-    Description: Checks for validity of trail object
-    Input: Trail object that is to be POST or PUT
-    Output: Returns true if name, zip code, and difficulty are not null, and false otherwise
-    **********************************************************************************************/
-    Boolean trailValidator(Trail trail) {
-        trail.name && trail.zipCode && trail.difficulty
     }
 
     @GET
@@ -98,9 +98,9 @@ public class TrailsResource extends Resource {
                          @QueryParam("smallJump") Boolean smallJump,
                          @QueryParam("gap") Boolean gap) {
         List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult,
-            leastDifficult, zipCode, smallDrop,largeDrop, woodRide, skinny, largeJump,
-            smallJump, gap)
-        ok(trailResult(trails)).build()
+            leastDifficult, zipCode, smallDrop,largeDrop, woodRide, skinny,
+            largeJump, smallJump, gap)
+        ok(trailsResult(trails)).build()
     }
 
     @GET
@@ -108,7 +108,8 @@ public class TrailsResource extends Resource {
     Response getByID (@PathParam('id') Integer id) {
         Trail trail = trailDAO.getTrailByID(id)
         if (trail) {
-            ok(trailResource(trail)).build()
+            trail.id = id
+            ok(trailResult(trail)).build()
         } else {
             notFound().build()
         }
@@ -120,16 +121,24 @@ public class TrailsResource extends Resource {
     Response putTrail (@PathParam('id') Integer id, @Valid ResultObject newResultObject) {
         Trail currentTrail = trailDAO.getTrailByID(id)
         if (currentTrail) {
-            if (newResultObject) {
-                Trail trail = (Trail)newResultObject.data.attributes
+            Trail trail
+            try {
+                trail = (Trail)newResultObject.data.attributes
+            } catch (Exception e) {
+                return badRequest(
+                    "All data is null, or invalid data type for at least one field").build()
+            }
+            if (trail && trailValidator(trail)) {
                 trailDAO.updateTrail(id, trail.name, trail.difficulty, trail.zipCode,
-                trail.smallDrop, trail.largeDrop, trail.woodRide, trail.skinny, trail.largeJump,
-                trail.smallJump, trail.gap)
+                    trail.polyline, trail.smallDrop, trail.largeDrop, trail.woodRide,
+                    trail.skinny, trail.largeJump, trail.smallJump, trail.gap)
                 //Trail has been updated
-                ok(trail).build()
+                trail.id = id
+                ok(trailResult(trail)).build()
             } else {
-                //Body data is missing
-                badRequest("No data in body to PUT").build()
+                //Body data is missing or trail is not valid
+                badRequest(
+                    "Required field missing or inavlid (name, zip code, or difficulty)").build()
             }
         } else {
             //No trail at ID exists
@@ -147,5 +156,15 @@ public class TrailsResource extends Resource {
         } else {
             notFound().build()
         }
+    }
+  
+    /**********************************************************************************************
+    Function: trailValidator
+    Description: Checks for validity of trail object
+    Input: Trail object that is to be POST or PUT
+    Output: Returns true if name, zip code, and difficulty are not null, and false otherwise
+    **********************************************************************************************/
+    Boolean trailValidator(Trail trail) {
+        trail.name && trail.zipCode && trailDAO.difficultyValidator(trail.difficulty)
     }
 }
