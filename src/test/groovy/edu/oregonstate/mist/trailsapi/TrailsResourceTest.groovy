@@ -100,7 +100,38 @@ class TrailsResourceTest {
         validateResponse(conflictingPost, 409, 1409, "Conflict - the request could not be processed"
             + " because of conflict in the request. Check the API call.")
     }
-    
+
+    // Test GET trail by Query
+    @Test
+    void testGetByQuery() {
+        def mockDAO = new StubFor(TrailDAO)
+
+        // Test with a full set of valid parameters
+        mockDAO.demand.getTrailByQuery() { String name,
+                                      String difficulty,
+                                      String mostDifficult,
+                                      String leastDifficult,
+                                      Integer zipCode,
+                                      Boolean smallDrop,
+                                      Boolean largeDrop,
+                                      Boolean woodRide,
+                                      Boolean skinny,
+                                      Boolean largeJump,
+                                      Boolean smallJump,
+                                      Boolean gap
+                                      -> []
+        }
+        def dao = mockDAO.proxyInstance()
+        TrailsResource resource = new TrailsResource(dao, null)
+        def fullParameterGet = resource.getByQuery( "Non existent trail", "Black", "Black",
+            "Black", 97330, true, false, false, false, false, false, false)
+        validateResponse(fullParameterGet, 200, null, null)
+
+        // Test with a partial set of valid parameters
+
+        // Test with invalid parameters
+    }
+
     void validateResponse(def response, Integer status, Integer code, String message) {
         if (status) {
             assert status == response.status
