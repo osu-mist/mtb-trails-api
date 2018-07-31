@@ -14,6 +14,7 @@ class TrailsResourceTest {
     // Test POST trail
     @Test
     void testPost() {
+        // Test posting a trail with valid Parameters
         def mockDAO = new StubFor(TrailDAO)
         mockDAO.demand.getNextId() { -> 1 }
         mockDAO.demand.postTrail() { Integer id,
@@ -34,21 +35,10 @@ class TrailsResourceTest {
         mockDAO.demand.getConflictingTrails() { Trail t -> false }
         def dao = mockDAO.proxyInstance()
         TrailsResource resource = new TrailsResource(dao, null)
-
-        // Test posting a trail with valid Parameters
         Trail validTrail = new Trail(
             name: "The Face",
             zipCode: 97330,
-            difficulty: "Black",
-            polyline: "fj348f9pjwejaeoi434344334kjllkofij34fo",
-            largeDrop: false,
-            smallDrop: true,
-            woodRide: false,
-            skinny: false,
-            largeJump: false,
-            smallJump: false,
-            gap: false
-        )
+            difficulty: "Black")
         def validPost = resource.postTrail(resource.trailResult(validTrail))
         validateResponse(validPost, 201, null, null)
 
@@ -61,16 +51,7 @@ class TrailsResourceTest {
         // Test posting a trail with a required field missing
         Trail fieldMissingTrail = new Trail(
             zipCode: 97330,
-            difficulty: "Black",
-            polyline: "fj348f9pjwejaeoi434344334kjllkofij34fo",
-            largeDrop: false,
-            smallDrop: true,
-            woodRide: false,
-            skinny: false,
-            largeJump: false,
-            smallJump: false,
-            gap: false
-        )
+            difficulty: "Black")
         def fieldMissingPost = resource.postTrail(resource.trailResult(fieldMissingTrail))
         validateResponse(fieldMissingPost, 400, 1400,
             "Required field missing or inavlid (name, zip code, or difficulty)")
