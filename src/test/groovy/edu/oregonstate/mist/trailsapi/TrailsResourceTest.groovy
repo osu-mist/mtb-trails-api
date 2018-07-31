@@ -108,18 +108,18 @@ class TrailsResourceTest {
 
         // Test with a full set of valid parameters
         mockDAO.demand.getTrailByQuery() { String name,
-                                      String difficulty,
-                                      String mostDifficult,
-                                      String leastDifficult,
-                                      Integer zipCode,
-                                      Boolean smallDrop,
-                                      Boolean largeDrop,
-                                      Boolean woodRide,
-                                      Boolean skinny,
-                                      Boolean largeJump,
-                                      Boolean smallJump,
-                                      Boolean gap
-                                      -> []
+                                           String difficulty,
+                                           String mostDifficult,
+                                           String leastDifficult,
+                                           Integer zipCode,
+                                           Boolean smallDrop,
+                                           Boolean largeDrop,
+                                           Boolean woodRide,
+                                           Boolean skinny,
+                                           Boolean largeJump,
+                                           Boolean smallJump,
+                                           Boolean gap
+                                           -> []
         }
         def dao = mockDAO.proxyInstance()
         TrailsResource resource = new TrailsResource(dao, null)
@@ -128,8 +128,18 @@ class TrailsResourceTest {
         validateResponse(fullParameterGet, 200, null, null)
 
         // Test with a partial set of valid parameters
+        dao = mockDAO.proxyInstance()
+        resource = new TrailsResource(dao, null)
+        def partialParameterGet = resource.getByQuery( "Non existent trail", "Black", null,
+            null, null, true, false, null, null, null, null, null)
+        validateResponse(partialParameterGet, 200, null, null)
 
         // Test with invalid parameters
+       // dao = mockDAO.proxyInstance()
+//resource = new TrailsResource(dao, null)
+        //def partialParameterGet = resource.getByQuery( "Non existent trail", "Black", null,
+        //    null, "nine seven seven zero two", true, false, null, null, null, null, null)
+
     }
 
     void validateResponse(def response, Integer status, Integer code, String message) {
