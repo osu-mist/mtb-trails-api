@@ -8,6 +8,10 @@ import edu.oregonstate.mist.api.jsonapi.ResultObject
 import io.dropwizard.jersey.params.IntParam
 import com.google.common.base.Optional
 import org.slf4j.LoggerFactory
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.skife.jdbi.v2.DBI
+import java.util.regex.Pattern
 
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
@@ -22,9 +26,6 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.QueryParam
 import javax.validation.Valid
 import javax.ws.rs.Consumes
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.skife.jdbi.v2.DBI
 
 @Path("/trails")
 @Produces(MediaType.APPLICATION_JSON)
@@ -89,7 +90,7 @@ public class TrailsResource extends Resource {
                          @QueryParam("difficulty") String difficulty,
                          @QueryParam("mostDifficult") String mostDifficult,
                          @QueryParam("leastDifficult") String leastDifficult,
-                         @QueryParam("zipCode") Integer zipCode,
+                         @QueryParam("zipCode") String zipCode,
                          @QueryParam("smallDrop") Boolean smallDrop,
                          @QueryParam("largeDrop") Boolean largeDrop,
                          @QueryParam("woodRide") Boolean woodRide,
@@ -97,8 +98,17 @@ public class TrailsResource extends Resource {
                          @QueryParam("largeJump") Boolean largeJump,
                          @QueryParam("smallJump") Boolean smallJump,
                          @QueryParam("gap") Boolean gap) {
+        String invalidParameter = parameterValidator(difficulty, mostDifficult,
+            leastDifficult, zipCode)
+        if (invalidParameter) {
+            return badRequest(invalidParameter).build()
+        }
+        Integer zipCodeInteger
+        if (zipCode) {
+            zipCodeInteger = zipCode.toInteger()
+        }
         List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult,
-            leastDifficult, zipCode, smallDrop,largeDrop, woodRide, skinny,
+            leastDifficult, zipCodeInteger, smallDrop,largeDrop, woodRide, skinny,
             largeJump, smallJump, gap)
         ok(trailsResult(trails)).build()
     }
@@ -159,12 +169,49 @@ public class TrailsResource extends Resource {
     }
 
     /**********************************************************************************************
+    Function: zipCodeValidator
+    Description: Checks for validity of a zip code
+    Input: String containing zip code
+    Output: Returns true valid zip code, false otherwise
+    **********************************************************************************************/
+    Boolean zipCodeValidator(String zipCode) {
+        String regex = '^[0-9]{5}(?:-[0-9]{4})?$'
+        Pattern pattern = Pattern.compile(regex)
+        pattern.matcher(zipCode).matches()
+    }
+
+    /**********************************************************************************************
     Function: trailValidator
     Description: Checks for validity of trail object
     Input: Trail object that is to be POST or PUT
     Output: Returns true if name, zip code, and difficulty are not null, and false otherwise
     **********************************************************************************************/
     Boolean trailValidator(Trail trail) {
-        trail.name && trail.zipCode && trailDAO.difficultyValidator(trail.difficulty)
+        trail.name && trail.zipCode && zipCodeValidator(trail.zipCode.toString()) &&
+            trailDAO.difficultyValidator(trail.difficulty)
+    }
+
+    /**********************************************************************************************
+    Function: parameterValidator
+    Description: Checks for validity of query parameters
+    Input: Query parameters that could be invalid
+    Output: Returns true if all parameters are valid in type or content if applicable, and false
+        otherwise
+    **********************************************************************************************/
+    String parameterValidator(String difficulty, String mostDifficult,
+        String leastDifficult, String zipCode) {
+            if (difficulty && !trailDAO.difficultyValidator(difficulty)) {
+                return "difficulty invalid - consult API documentation for valid difficulties"
+            }
+            if (mostDifficult && !trailDAO.difficultyValidator(mostDifficult)) {
+                return "mostDifficult invalid - consult API documentation for valid difficulties"
+            }
+            if (leastDifficult && !trailDAO.difficultyValidator(leastDifficult)) {
+                return "leastDifficult invalid - consult API documentation for valid difficulties"
+            }
+            if (zipCode && !zipCodeValidator(zipCode)) {
+                return "zipCode invalid - must be in form of 12345 or 12345-6789"
+            }
+        ""
     }
 }
