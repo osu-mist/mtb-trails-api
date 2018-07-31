@@ -101,7 +101,7 @@ class TrailsResourceTest {
             + " because of conflict in the request. Check the API call.")
     }
 
-    // Test GET trail by Query
+    // Test GET trail by query
     @Test
     void testGetByQuery() {
         // Test with a full set of valid parameters
@@ -166,9 +166,34 @@ class TrailsResourceTest {
             null, "97330", true, false, null, null, null, null, null)
         validateResponse(invalidDifficultyGet, 400, 1400,
             "difficulty invalid - consult API documentation for valid difficulties")
-
     }
 
+    // Test GET trail by ID
+    @Test
+    void testGetByID() {
+        // Test with existing ID
+        def mockDAO = new StubFor(TrailDAO)
+        Trail trail = new Trail( id: 1,
+                                 name: "Test Trail",
+                                 zipCode: 97330,
+                                 difficulty: "Green")
+        mockDAO.demand.getTrailByID() { Integer id -> trail }
+        def dao = mockDAO.proxyInstance()
+        TrailsResource resource = new TrailsResource(dao, null)
+        def existingIDGet = resource.getByID(1)
+        validateResponse(existingIDGet, 200, null, null)
+
+        // Test with non-existent ID
+        mockDAO = new StubFor(TrailDAO)
+        mockDAO.demand.getTrailByID() { Integer id -> null }
+        dao = mockDAO.proxyInstance()
+        resource = new TrailsResource(dao, null)
+        def nonExistentIDGet = resource.getByID(4635)
+        validateResponse(nonExistentIDGet, 404, 1404,
+            "Not Found - the resource requested was not found. Check the API call.")
+    }
+
+    // TODO: function header
     void validateResponse(def response, Integer status, Integer code, String message) {
         if (status) {
             assert status == response.status
