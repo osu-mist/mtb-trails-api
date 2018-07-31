@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.skife.jdbi.v2.DBI
+import java.util.regex.Pattern
 
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
@@ -97,11 +98,17 @@ public class TrailsResource extends Resource {
                          @QueryParam("largeJump") Boolean largeJump,
                          @QueryParam("smallJump") Boolean smallJump,
                          @QueryParam("gap") Boolean gap) {
-        if (!parameterValidator(difficulty, mostDifficult, leastDifficult, zipCode)) {
-            return badRequest("Invalid parameter").build()
+        String invalidParameter = parameterValidator(difficulty, mostDifficult,
+            leastDifficult, zipCode)
+        if (invalidParameter) {
+            return badRequest(invalidParameter).build()
+        }
+        Integer zipCodeInteger
+        if (zipCode) {
+            zipCodeInteger = zipCode.toInteger()
         }
         List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult,
-            leastDifficult, zipCode.toInteger(), smallDrop,largeDrop, woodRide, skinny,
+            leastDifficult, zipCodeInteger, smallDrop,largeDrop, woodRide, skinny,
             largeJump, smallJump, gap)
         ok(trailsResult(trails)).build()
     }
@@ -162,13 +169,25 @@ public class TrailsResource extends Resource {
     }
 
     /**********************************************************************************************
+    Function: zipCodeValidator
+    Description: Checks for validity of a zip code
+    Input: String containing zip code
+    Output: Returns true valid zip code, false otherwise
+    **********************************************************************************************/
+    Boolean zipCodeValidator(String zipCode) {
+        String regex = '^[0-9]{5}(?:-[0-9]{4})?$'
+        Pattern pattern = Pattern.compile(regex)
+        pattern.matcher(zipCode).matches()
+    }
+
+    /**********************************************************************************************
     Function: trailValidator
     Description: Checks for validity of trail object
     Input: Trail object that is to be POST or PUT
     Output: Returns true if name, zip code, and difficulty are not null, and false otherwise
     **********************************************************************************************/
     Boolean trailValidator(Trail trail) {
-        trail.name && trail.zipCode && trail.zipCode < 100000 && trail.zipCode > 9999 &&
+        trail.name && trail.zipCode && zipCodeValidator(trail.zipCode.toString()) &&
             trailDAO.difficultyValidator(trail.difficulty)
     }
 
@@ -179,20 +198,20 @@ public class TrailsResource extends Resource {
     Output: Returns true if all parameters are valid in type or content if applicable, and false
         otherwise
     **********************************************************************************************/
-    Boolean parameterValidator(String difficulty, String mostDifficult,
+    String parameterValidator(String difficulty, String mostDifficult,
         String leastDifficult, String zipCode) {
             if (difficulty && !trailDAO.difficultyValidator(difficulty)) {
-                return false
+                return "difficulty invalid"
             }
             if (mostDifficult && !trailDAO.difficultyValidator(mostDifficult)) {
-                return false
+                return "mostDifficult invalid"
             }
             if (leastDifficult && !trailDAO.difficultyValidator(leastDifficult)) {
-                return false
+                return "leastDifficult invalid"
             }
-            if (zipCode && (!zipCode.isInteger() || zipCode.length() != 5)) {
-                return false
+            if (zipCode && !zipCodeValidator(zipCode)) {
+                return "zipCode invalid"
             }
-        true
+        ""
     }
 }
