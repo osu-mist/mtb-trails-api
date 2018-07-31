@@ -40,12 +40,12 @@ class TrailsResourceTest {
             zipCode: 97330,
             difficulty: "Black")
         def validPost = resource.postTrail(resource.trailResult(validTrail))
-        validateResponse(validPost, 201, null, null)
+        responseValidator(validPost, 201, null, null)
 
         // Test posting a trail with null data
         ResultObject nullResult = new ResultObject( data: null)
         def nullPost = resource.postTrail(nullResult)
-        validateResponse(nullPost, 400, 1400,
+        responseValidator(nullPost, 400, 1400,
             "All data is null, or invalid data type for at least one field")
 
         // Test posting a trail with a required field missing
@@ -53,7 +53,7 @@ class TrailsResourceTest {
             zipCode: 97330,
             difficulty: "Black")
         def fieldMissingPost = resource.postTrail(resource.trailResult(fieldMissingTrail))
-        validateResponse(fieldMissingPost, 400, 1400,
+        responseValidator(fieldMissingPost, 400, 1400,
             "Required field missing or inavlid (name, zip code, or difficulty)")
 
         // Test posting a trail that conflicts with an existing trails
@@ -78,7 +78,7 @@ class TrailsResourceTest {
         dao = mockDAO.proxyInstance()
         resource = new TrailsResource(dao, null)
         def conflictingPost = resource.postTrail(resource.trailResult(validTrail))
-        validateResponse(conflictingPost, 409, 1409, "Conflict - the request could not be processed"
+        responseValidator(conflictingPost, 409, 1409, "Conflict - the request could not be processed"
             + " because of conflict in the request. Check the API call.")
     }
 
@@ -106,7 +106,7 @@ class TrailsResourceTest {
         TrailsResource resource = new TrailsResource(dao, null)
         def fullParameterGet = resource.getByQuery( "Non existent trail", "Black", "Black",
             "Black", "97330", true, false, false, false, false, false, false)
-        validateResponse(fullParameterGet, 200, null, null)
+        responseValidator(fullParameterGet, 200, null, null)
 
         // Test with a partial set of valid parameters
         mockDAO.demand.difficultyValidator() { String d -> true }
@@ -114,14 +114,14 @@ class TrailsResourceTest {
         resource = new TrailsResource(dao, null)
         def partialParameterGet = resource.getByQuery("Non existent trail", "Black", null,
             null, null, true, false, null, null, null, null, null)
-        validateResponse(partialParameterGet, 200, null, null)
+        responseValidator(partialParameterGet, 200, null, null)
 
         // Test with invalid zip code
         dao = mockDAO.proxyInstance()
         resource = new TrailsResource(dao, null)
         def invalidZipCodeGet = resource.getByQuery( "Non existent trail", "Black", null,
             null, "nine seven seven zero two", true, false, null, null, null, null, null)
-        validateResponse(invalidZipCodeGet, 400, 1400,
+        responseValidator(invalidZipCodeGet, 400, 1400,
             "zipCode invalid - must be in form of 12345 or 12345-6789")
 
         // Test with invalid difficulty
@@ -145,7 +145,7 @@ class TrailsResourceTest {
         resource = new TrailsResource(dao, null)
         def invalidDifficultyGet = resource.getByQuery( "Non existent trail", "Gnarly", null,
             null, "97330", true, false, null, null, null, null, null)
-        validateResponse(invalidDifficultyGet, 400, 1400,
+        responseValidator(invalidDifficultyGet, 400, 1400,
             "difficulty invalid - consult API documentation for valid difficulties")
     }
 
@@ -162,7 +162,7 @@ class TrailsResourceTest {
         def dao = mockDAO.proxyInstance()
         TrailsResource resource = new TrailsResource(dao, null)
         def existingIDGet = resource.getByID(1)
-        validateResponse(existingIDGet, 200, null, null)
+        responseValidator(existingIDGet, 200, null, null)
 
         // Test with non-existent ID
         mockDAO = new StubFor(TrailDAO)
@@ -170,7 +170,7 @@ class TrailsResourceTest {
         dao = mockDAO.proxyInstance()
         resource = new TrailsResource(dao, null)
         def nonExistentIDGet = resource.getByID(4635)
-        validateResponse(nonExistentIDGet, 404, 1404,
+        responseValidator(nonExistentIDGet, 404, 1404,
             "Not Found - the resource requested was not found. Check the API call.")
     }
 
@@ -187,7 +187,7 @@ class TrailsResourceTest {
                                  zipCode: 97330,
                                  difficulty: "Green")
         def nonExistentIDPut = resource.putTrail(4635, resource.trailResult(validTrail))
-        validateResponse(nonExistentIDPut, 404, 1404,
+        responseValidator(nonExistentIDPut, 404, 1404,
             "Not Found - the resource requested was not found. Check the API call.")
 
         // Test with valid trail and existing ID
@@ -211,14 +211,14 @@ class TrailsResourceTest {
         dao = mockDAO.proxyInstance()
         resource = new TrailsResource(dao, null)
         def validPut = resource.putTrail(1, resource.trailResult(validTrail))
-        validateResponse(validPut, 200, null, null)
+        responseValidator(validPut, 200, null, null)
 
         // Test with null data
         dao = mockDAO.proxyInstance()
         resource = new TrailsResource(dao, null)
         ResultObject nullResult = new ResultObject( data: null)
         def nullPut = resource.putTrail(1, nullResult)
-        validateResponse(nullPut, 400, 1400,
+        responseValidator(nullPut, 400, 1400,
             "All data is null, or invalid data type for at least one field")
 
         // Test posting a trail with a required field missing
@@ -228,12 +228,17 @@ class TrailsResourceTest {
                 zipCode: 97330,
                 difficulty: "Black")
         def fieldMissingPut = resource.putTrail(1, resource.trailResult(fieldMissingTrail))
-            validateResponse(fieldMissingPut, 400, 1400,
+            responseValidator(fieldMissingPut, 400, 1400,
                 "Required field missing or inavlid (name, zip code, or difficulty)")
     }
 
-    // TODO: function header
-    void validateResponse(def response, Integer status, Integer code, String message) {
+    /**********************************************************************************************
+    Function: responseValidator
+    Description: Checks equality of status, code, and message between expected and tested response
+    Input: Tested response, and expected status, code, and message
+    Output: Returns true if all expected fields match the test response, and false otherwise
+    **********************************************************************************************/
+    void responseValidator(def response, Integer status, Integer code, String message) {
         if (status) {
             assert status == response.status
         }
