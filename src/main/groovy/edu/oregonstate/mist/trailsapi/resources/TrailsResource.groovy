@@ -201,16 +201,16 @@ public class TrailsResource extends Resource {
     String parameterValidator(String difficulty, String mostDifficult,
         String leastDifficult, String zipCode) {
             if (difficulty && !trailDAO.difficultyValidator(difficulty)) {
-                return "difficulty invalid"
+                return "difficulty invalid - consult API documentation for valid difficulties"
             }
             if (mostDifficult && !trailDAO.difficultyValidator(mostDifficult)) {
-                return "mostDifficult invalid"
+                return "mostDifficult invalid - consult API documentation for valid difficulties"
             }
             if (leastDifficult && !trailDAO.difficultyValidator(leastDifficult)) {
-                return "leastDifficult invalid"
+                return "leastDifficult invalid - consult API documentation for valid difficulties"
             }
             if (zipCode && !zipCodeValidator(zipCode)) {
-                return "zipCode invalid"
+                return "zipCode invalid - must be in form of 12345 or 12345-6789"
             }
         ""
     }
