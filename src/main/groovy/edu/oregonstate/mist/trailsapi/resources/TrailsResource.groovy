@@ -8,6 +8,9 @@ import edu.oregonstate.mist.api.jsonapi.ResultObject
 import io.dropwizard.jersey.params.IntParam
 import com.google.common.base.Optional
 import org.slf4j.LoggerFactory
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.skife.jdbi.v2.DBI
 
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
@@ -22,9 +25,6 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.QueryParam
 import javax.validation.Valid
 import javax.ws.rs.Consumes
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.skife.jdbi.v2.DBI
 
 @Path("/trails")
 @Produces(MediaType.APPLICATION_JSON)
@@ -89,7 +89,7 @@ public class TrailsResource extends Resource {
                          @QueryParam("difficulty") String difficulty,
                          @QueryParam("mostDifficult") String mostDifficult,
                          @QueryParam("leastDifficult") String leastDifficult,
-                         @QueryParam("zipCode") Integer zipCode,
+                         @QueryParam("zipCode") String zipCode,
                          @QueryParam("smallDrop") Boolean smallDrop,
                          @QueryParam("largeDrop") Boolean largeDrop,
                          @QueryParam("woodRide") Boolean woodRide,
@@ -97,8 +97,11 @@ public class TrailsResource extends Resource {
                          @QueryParam("largeJump") Boolean largeJump,
                          @QueryParam("smallJump") Boolean smallJump,
                          @QueryParam("gap") Boolean gap) {
+        if (!parameterValidator(difficulty, mostDifficult, leastDifficult, zipCode)) {
+            return badRequest("Invalid parameter").build()
+        }
         List<Trail> trails = trailDAO.getTrailByQuery(name, difficulty, mostDifficult,
-            leastDifficult, zipCode, smallDrop,largeDrop, woodRide, skinny,
+            leastDifficult, zipCode.toInteger(), smallDrop,largeDrop, woodRide, skinny,
             largeJump, smallJump, gap)
         ok(trailsResult(trails)).build()
     }
@@ -157,7 +160,7 @@ public class TrailsResource extends Resource {
             notFound().build()
         }
     }
-  
+
     /**********************************************************************************************
     Function: trailValidator
     Description: Checks for validity of trail object
@@ -165,6 +168,31 @@ public class TrailsResource extends Resource {
     Output: Returns true if name, zip code, and difficulty are not null, and false otherwise
     **********************************************************************************************/
     Boolean trailValidator(Trail trail) {
-        trail.name && trail.zipCode && trailDAO.difficultyValidator(trail.difficulty)
+        trail.name && trail.zipCode && trail.zipCode < 100000 && trail.zipCode > 9999 &&
+            trailDAO.difficultyValidator(trail.difficulty)
+    }
+
+    /**********************************************************************************************
+    Function: parameterValidator
+    Description: Checks for validity of query parameters
+    Input: Query parameters that could be invalid
+    Output: Returns true if all parameters are valid in type or content if applicable, and false
+        otherwise
+    **********************************************************************************************/
+    Boolean parameterValidator(String difficulty, String mostDifficult,
+        String leastDifficult, String zipCode) {
+            if (difficulty && !trailDAO.difficultyValidator(difficulty)) {
+                return false
+            }
+            if (mostDifficult && !trailDAO.difficultyValidator(mostDifficult)) {
+                return false
+            }
+            if (leastDifficult && !trailDAO.difficultyValidator(leastDifficult)) {
+                return false
+            }
+            if (zipCode && (!zipCode.isInteger() || zipCode.length() != 5)) {
+                return false
+            }
+        true
     }
 }
