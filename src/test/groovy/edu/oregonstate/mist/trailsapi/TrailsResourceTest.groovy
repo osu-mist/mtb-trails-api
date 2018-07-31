@@ -193,6 +193,64 @@ class TrailsResourceTest {
             "Not Found - the resource requested was not found. Check the API call.")
     }
 
+    // Test PUT trails
+    @Test
+    void testPut() {
+        // Test with non-existent ID
+        def mockDAO = new StubFor(TrailDAO)
+        mockDAO.demand.getTrailByID() { Integer id -> null }
+        def dao = mockDAO.proxyInstance()
+        TrailsResource resource = new TrailsResource(dao, null)
+        Trail validTrail = new Trail( id: 1,
+                                 name: "Test Trail",
+                                 zipCode: 97330,
+                                 difficulty: "Green")
+        def nonExistentIDPut = resource.putTrail(4635, resource.trailResult(validTrail))
+        validateResponse(nonExistentIDPut, 404, 1404,
+            "Not Found - the resource requested was not found. Check the API call.")
+
+        // Test with valid trail and existing ID
+        mockDAO = new StubFor(TrailDAO)
+        mockDAO.demand.getTrailByID() { Integer id -> validTrail }
+        mockDAO.demand.difficultyValidator() { String d -> true }
+        mockDAO.demand.updateTrail() { Integer i,
+                                       String name,
+                                       String difficulty,
+                                       Integer zipCode,
+                                       String polyline,
+                                       Boolean smallDrop,
+                                       Boolean largeDrop,
+                                       Boolean woodRide,
+                                       Boolean skinny,
+                                       Boolean largeJump,
+                                       Boolean smallJump,
+                                       Boolean gap
+                                       -> void
+        }
+        dao = mockDAO.proxyInstance()
+        resource = new TrailsResource(dao, null)
+        def validPut = resource.putTrail(1, resource.trailResult(validTrail))
+        validateResponse(validPut, 200, null, null)
+
+        // Test with null data
+        dao = mockDAO.proxyInstance()
+        resource = new TrailsResource(dao, null)
+        ResultObject nullResult = new ResultObject( data: null)
+        def nullPut = resource.putTrail(1, nullResult)
+        validateResponse(nullPut, 400, 1400,
+            "All data is null, or invalid data type for at least one field")
+
+        // Test posting a trail with a required field missing
+        dao = mockDAO.proxyInstance()
+        resource = new TrailsResource(dao, null)
+        Trail fieldMissingTrail = new Trail(
+                zipCode: 97330,
+                difficulty: "Black")
+        def fieldMissingPut = resource.putTrail(1, resource.trailResult(fieldMissingTrail))
+            validateResponse(fieldMissingPut, 400, 1400,
+                "Required field missing or inavlid (name, zip code, or difficulty)")
+    }
+
     // TODO: function header
     void validateResponse(def response, Integer status, Integer code, String message) {
         if (status) {
