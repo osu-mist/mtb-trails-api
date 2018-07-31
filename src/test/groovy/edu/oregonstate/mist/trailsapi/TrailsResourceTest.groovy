@@ -104,9 +104,8 @@ class TrailsResourceTest {
     // Test GET trail by Query
     @Test
     void testGetByQuery() {
-        def mockDAO = new StubFor(TrailDAO)
-
         // Test with a full set of valid parameters
+        def mockDAO = new StubFor(TrailDAO)
         mockDAO.demand.getTrailByQuery() { String name,
                                            String difficulty,
                                            String mostDifficult,
@@ -121,24 +120,52 @@ class TrailsResourceTest {
                                            Boolean gap
                                            -> []
         }
+        mockDAO.demand.difficultyValidator(3..3) { String d -> true }
         def dao = mockDAO.proxyInstance()
         TrailsResource resource = new TrailsResource(dao, null)
         def fullParameterGet = resource.getByQuery( "Non existent trail", "Black", "Black",
-            "Black", 97330, true, false, false, false, false, false, false)
+            "Black", "97330", true, false, false, false, false, false, false)
         validateResponse(fullParameterGet, 200, null, null)
 
         // Test with a partial set of valid parameters
+        mockDAO.demand.difficultyValidator() { String d -> true }
         dao = mockDAO.proxyInstance()
         resource = new TrailsResource(dao, null)
-        def partialParameterGet = resource.getByQuery( "Non existent trail", "Black", null,
+        def partialParameterGet = resource.getByQuery("Non existent trail", "Black", null,
             null, null, true, false, null, null, null, null, null)
         validateResponse(partialParameterGet, 200, null, null)
 
-        // Test with invalid parameters
-       // dao = mockDAO.proxyInstance()
-//resource = new TrailsResource(dao, null)
-        //def partialParameterGet = resource.getByQuery( "Non existent trail", "Black", null,
-        //    null, "nine seven seven zero two", true, false, null, null, null, null, null)
+        // Test with invalid zip code
+        dao = mockDAO.proxyInstance()
+        resource = new TrailsResource(dao, null)
+        def invalidZipCodeGet = resource.getByQuery( "Non existent trail", "Black", null,
+            null, "nine seven seven zero two", true, false, null, null, null, null, null)
+        validateResponse(invalidZipCodeGet, 400, 1400,
+            "zipCode invalid - must be in form of 12345 or 12345-6789")
+
+        // Test with invalid difficulty
+        mockDAO = new StubFor(TrailDAO)
+        mockDAO.demand.getTrailByQuery() { String name,
+                                           String difficulty,
+                                           String mostDifficult,
+                                           String leastDifficult,
+                                           Integer zipCode,
+                                           Boolean smallDrop,
+                                           Boolean largeDrop,
+                                           Boolean woodRide,
+                                           Boolean skinny,
+                                           Boolean largeJump,
+                                           Boolean smallJump,
+                                           Boolean gap
+                                           -> []
+        }
+        mockDAO.demand.difficultyValidator() { String d -> false}
+        dao = mockDAO.proxyInstance()
+        resource = new TrailsResource(dao, null)
+        def invalidDifficultyGet = resource.getByQuery( "Non existent trail", "Gnarly", null,
+            null, "97330", true, false, null, null, null, null, null)
+        validateResponse(invalidDifficultyGet, 400, 1400,
+            "difficulty invalid - consult API documentation for valid difficulties")
 
     }
 
