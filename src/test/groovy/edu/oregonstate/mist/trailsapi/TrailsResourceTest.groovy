@@ -78,8 +78,8 @@ class TrailsResourceTest {
         dao = mockDAO.proxyInstance()
         resource = new TrailsResource(dao, null)
         def conflictingPost = resource.postTrail(resource.trailResult(validTrail))
-        responseValidator(conflictingPost, 409, 1409, "Conflict - the request could not be processed"
-            + " because of conflict in the request. Check the API call.")
+        responseValidator(conflictingPost, 409, 1409, "Conflict - the request could not be"
+            + " processed because of conflict in the request. Check the API call.")
     }
 
     // Test GET trail by query
@@ -230,6 +230,32 @@ class TrailsResourceTest {
         def fieldMissingPut = resource.putTrail(1, resource.trailResult(fieldMissingTrail))
             responseValidator(fieldMissingPut, 400, 1400,
                 "Required field missing or inavlid (name, zip code, or difficulty)")
+    }
+
+    // Test DELETE trails
+    @Test
+    void testDelte() {
+        // Test with existing ID
+        def mockDAO = new StubFor(TrailDAO)
+        Trail trail = new Trail( id: 1,
+                                 name: "Test Trail",
+                                 zipCode: 97330,
+                                 difficulty: "Green")
+        mockDAO.demand.getTrailByID() { Integer id -> trail }
+        mockDAO.demand.deleteTrail() { Integer id -> void }
+        def dao = mockDAO.proxyInstance()
+        TrailsResource resource = new TrailsResource(dao, null)
+        def existingIDDelete = resource.deleteTrail(1)
+        responseValidator(existingIDDelete, 200, null, null)
+
+        // Test with non-existent ID
+        mockDAO = new StubFor(TrailDAO)
+        mockDAO.demand.getTrailByID() { Integer id -> null }
+        dao = mockDAO.proxyInstance()
+        resource = new TrailsResource(dao, null)
+        def nonExistentIDDelete = resource.getByID(4635)
+        responseValidator(nonExistentIDDelete, 404, 1404,
+            "Not Found - the resource requested was not found. Check the API call.")
     }
 
     /**********************************************************************************************
