@@ -32,6 +32,7 @@ import javax.ws.rs.Consumes
 public class TrailsResource extends Resource {
     private final TrailDAO trailDAO
     private DBI dbi
+    private static final String zipCodeRegex = '^[0-9]{5}(?:-[0-9]{4})?$'
 
     TrailsResource(TrailDAO trailDAO, DBI dbi) {
         this.trailDAO = trailDAO
@@ -175,9 +176,7 @@ public class TrailsResource extends Resource {
     Output: Returns true valid zip code, false otherwise
     **********************************************************************************************/
     Boolean zipCodeValidator(String zipCode) {
-        String regex = '^[0-9]{5}(?:-[0-9]{4})?$'
-        Pattern pattern = Pattern.compile(regex)
-        pattern.matcher(zipCode).matches()
+        zipCode ==~ zipCodeRegex
     }
 
     /**********************************************************************************************
