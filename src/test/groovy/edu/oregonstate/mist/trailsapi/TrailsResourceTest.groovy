@@ -10,12 +10,13 @@ import groovy.mock.interceptor.StubFor
 import org.junit.Test
 
 class TrailsResourceTest {
-
+    private static final String notFoundMessage =
+        "Not Found - the resource requested was not found. Check the API call."
     // Test POST trail
     @Test
     void testPost() {
         // Test posting a trail with valid Parameters
-        def mockDAO = new StubFor(TrailDAO)
+        def mockDAO = getMockDAO()
         mockDAO.demand.getNextId() { -> 1 }
         mockDAO.demand.postTrail() { Integer id,
                                      String name,
@@ -57,7 +58,7 @@ class TrailsResourceTest {
             "Required field missing or inavlid (name, zip code, or difficulty)")
 
         // Test posting a trail that conflicts with an existing trails
-        mockDAO = new StubFor(TrailDAO)
+        mockDAO = getMockDAO()
         mockDAO.demand.getNextId() { -> 1 }
         mockDAO.demand.postTrail() { Integer id,
                                      String name,
@@ -86,7 +87,7 @@ class TrailsResourceTest {
     @Test
     void testGetByQuery() {
         // Test with a full set of valid parameters
-        def mockDAO = new StubFor(TrailDAO)
+        def mockDAO = getMockDAO()
         mockDAO.demand.getTrailByQuery() { String name,
                                            String difficulty,
                                            String mostDifficult,
@@ -125,7 +126,7 @@ class TrailsResourceTest {
             "zipCode invalid - must be in form of 12345 or 12345-6789")
 
         // Test with invalid difficulty
-        mockDAO = new StubFor(TrailDAO)
+        mockDAO = getMockDAO()
         mockDAO.demand.getTrailByQuery() { String name,
                                            String difficulty,
                                            String mostDifficult,
@@ -153,7 +154,7 @@ class TrailsResourceTest {
     @Test
     void testGetByID() {
         // Test with existing ID
-        def mockDAO = new StubFor(TrailDAO)
+        def mockDAO = getMockDAO()
         Trail trail = new Trail( id: 1,
                                  name: "Test Trail",
                                  zipCode: 97330,
@@ -165,20 +166,19 @@ class TrailsResourceTest {
         responseValidator(existingIDGet, 200, null, null)
 
         // Test with non-existent ID
-        mockDAO = new StubFor(TrailDAO)
+        mockDAO = getMockDAO()
         mockDAO.demand.getTrailByID() { Integer id -> null }
         dao = mockDAO.proxyInstance()
         resource = new TrailsResource(dao, null)
         def nonExistentIDGet = resource.getByID(4635)
-        responseValidator(nonExistentIDGet, 404, 1404,
-            "Not Found - the resource requested was not found. Check the API call.")
+        responseValidator(nonExistentIDGet, 404, 1404, notFoundMessage)
     }
 
     // Test PUT trails
     @Test
     void testPut() {
         // Test with non-existent ID
-        def mockDAO = new StubFor(TrailDAO)
+        def mockDAO = getMockDAO()
         mockDAO.demand.getTrailByID() { Integer id -> null }
         def dao = mockDAO.proxyInstance()
         TrailsResource resource = new TrailsResource(dao, null)
@@ -187,11 +187,10 @@ class TrailsResourceTest {
                                  zipCode: 97330,
                                  difficulty: "Green")
         def nonExistentIDPut = resource.putTrail(4635, resource.trailResult(validTrail))
-        responseValidator(nonExistentIDPut, 404, 1404,
-            "Not Found - the resource requested was not found. Check the API call.")
+        responseValidator(nonExistentIDPut, 404, 1404, notFoundMessage)
 
         // Test with valid trail and existing ID
-        mockDAO = new StubFor(TrailDAO)
+        mockDAO = getMockDAO()
         mockDAO.demand.getTrailByID() { Integer id -> validTrail }
         mockDAO.demand.difficultyValidator() { String d -> true }
         mockDAO.demand.updateTrail() { Integer i,
@@ -236,7 +235,7 @@ class TrailsResourceTest {
     @Test
     void testDelte() {
         // Test with existing ID
-        def mockDAO = new StubFor(TrailDAO)
+        def mockDAO = getMockDAO()
         Trail trail = new Trail( id: 1,
                                  name: "Test Trail",
                                  zipCode: 97330,
@@ -249,13 +248,12 @@ class TrailsResourceTest {
         responseValidator(existingIDDelete, 200, null, null)
 
         // Test with non-existent ID
-        mockDAO = new StubFor(TrailDAO)
+        mockDAO = getMockDAO()
         mockDAO.demand.getTrailByID() { Integer id -> null }
         dao = mockDAO.proxyInstance()
         resource = new TrailsResource(dao, null)
         def nonExistentIDDelete = resource.getByID(4635)
-        responseValidator(nonExistentIDDelete, 404, 1404,
-            "Not Found - the resource requested was not found. Check the API call.")
+        responseValidator(nonExistentIDDelete, 404, 1404, notFoundMessage)
     }
 
     /**********************************************************************************************
@@ -274,5 +272,14 @@ class TrailsResourceTest {
         if (message) {
             assert message == response.entity.developerMessage
         }
+    }
+
+    /**********************************************************************************************
+    Function: getMockDAO
+    Description: Returns a new stub for TrailDAO
+    Output: new stub for TrailDAO
+    **********************************************************************************************/
+    def getMockDAO() {
+       new StubFor(TrailDAO)
     }
 }
