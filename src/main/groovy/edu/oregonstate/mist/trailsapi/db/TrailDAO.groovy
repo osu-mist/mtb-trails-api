@@ -171,7 +171,7 @@ interface TrailDAO extends Closeable {
                 = UPPER(REPLACE(REPLACE(:trail.name, ' ', ''), '''', ''))
         AND ZIPCODE = :trail.zipCode
         AND DIFFICULTY_ID = (SELECT DIFFICULTY_ID FROM TRAIL_DIFFICULTIES
-            WHERE DIFFICULTY_COLOR = :trail.difficulty)
+            WHERE UPPER(DIFFICULTY_COLOR) = UPPER(:trail.difficulty))
     """)
     Boolean getConflictingTrails(@BindBean("trail") Trail trail)
 
@@ -183,7 +183,7 @@ interface TrailDAO extends Closeable {
     **********************************************************************************************/
     @SqlQuery("""
         SELECT COUNT(*) FROM TRAIL_DIFFICULTIES
-        WHERE DIFFICULTY_COLOR = :difficulty
+        WHERE UPPER(DIFFICULTY_COLOR) = UPPER(:difficulty)
     """)
     Boolean difficultyValidator(@Bind("difficulty") String difficulty)
 
